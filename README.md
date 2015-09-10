@@ -10,6 +10,8 @@ If required, extension window can be detached from Burp UI.
 
 This extension _DOES NOT_ require Burp Suite Professional
 
+![flow-example](https://cloud.githubusercontent.com/assets/4956006/9799914/4f812d0e-580a-11e5-9309-658996517a07.png)
+
 ## License
 
 [MIT License](https://github.com/twbs/bootstrap/blob/master/LICENSE)
