@@ -42,7 +42,7 @@ import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SpringLayout;
-import javax.swing.SwingConstants;
+//import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.BevelBorder;
 import javax.swing.event.DocumentEvent;
@@ -55,7 +55,7 @@ import javax.swing.table.TableRowSorter;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-	private final String version = "<html>Flow v1.02, (2015-07-24), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+	// private final String version = "<html>Flow v1.02, (2015-07-24), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
 
 	private static IBurpExtenderCallbacks callbacks;
 	private static IExtensionHelpers helpers;
@@ -123,13 +123,13 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 	private boolean flowFilterCaptureSourceIntruderOnlyOrig;
 	private boolean flowFilterCaptureSourceExtenderOnlyOrig;
 	private ArrayList<JDialog> dialogs = new ArrayList<JDialog>();
-	private static final int adHeight = 42;
-	private String[] ads = {
-			"<html><p style=\"text-align: center\">Generate beautiful, concise, MS Word-templated reports from Burp, HP WebInspect or just manually written yaml/json files in minutes! It is completely cost-free, opensource, solution! Visit <a href=\"http://github.com/hvqzao/report-ng\">http://github.com/hvqzao/report-ng</a> to learn more.</p></html>",
-			"<html><p style=\"text-align: center\">Are you tired seeing of too many Burp UI main tabs because of number of extensions Installed? Check out \"Wildcard\" solution <a href=\"http://github.com/hvqzao/burp-wildcard\">http://github.com/hvqzao/burp-wildcard</a> - an extension banned from official BApp Store because of UI *hacking*! :)</p></html>",
-			version };
-	private int adIndex = 0;
-	private JLabel flowFilterAd;
+	// private static final int adHeight = 42;
+	// private String[] ads = {
+	// "<html><p style=\"text-align: center\">Generate beautiful, concise, MS Word-templated reports from Burp, HP WebInspect or just manually written yaml/json files in minutes! It is completely cost-free, opensource, solution! Visit <a href=\"http://github.com/hvqzao/report-ng\">http://github.com/hvqzao/report-ng</a> to learn more.</p></html>",
+	// "<html><p style=\"text-align: center\">Are you tired seeing of too many Burp UI main tabs because of number of extensions Installed? Check out \"Wildcard\" solution <a href=\"http://github.com/hvqzao/burp-wildcard\">http://github.com/hvqzao/burp-wildcard</a> - an extension banned from official BApp Store because of UI *hacking*! :)</p></html>",
+	// version };
+	// private int adIndex = 0;
+	// private JLabel flowFilterAd;
 	private SeparateView separateView;
 	private JButton flowFilterHelpExt;
 
@@ -209,7 +209,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 				// layout
 				final JDialog flowFilterPopupWindow = new JDialog();
 				final JPanel flowFilterPopup = new JPanel();
-				flowFilterPopup.setPreferredSize(new Dimension(470 + 165, 223 + adHeight)); // filter popup dimension
+				flowFilterPopup.setPreferredSize(new Dimension(470 + 165, 223 /*+ adHeight*/)); // filter popup dimension
 				flowFilterPopup.setBorder(BorderFactory.createLineBorder(Color.darkGray));
 				flowFilterPopup.setBackground(Color.white);
 				SpringLayout flowFilterLayout = new SpringLayout();
@@ -687,25 +687,26 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 				// filter layout
 				//
 				flowFilterBottom = new JPanel();
-				flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBottom, -adHeight, SpringLayout.SOUTH, flowFilterPopup);
+				flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBottom, -4 /*-adHeight*/, SpringLayout.SOUTH, flowFilterPopup);
 				flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBottom, 0, SpringLayout.WEST, flowFilterTop);
-				flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterBottom, -adHeight, SpringLayout.SOUTH, flowFilterPopup);
+				flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterBottom, 0 /*-adHeight*/, SpringLayout.SOUTH, flowFilterPopup);
 				flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterBottom, 0, SpringLayout.EAST, flowFilterPopup);
-				// flowFilterBottom.setBackground(SystemColor.menu);
-				flowFilterBottom.setBackground(new Color(247, 247, 247));
+				flowFilterBottom.setBackground(SystemColor.menu);
+				// flowFilterBottom.setBackground(new Color(247, 247, 247));
+				// flowFilterBottom.setBackground(new Color(255, 0, 0));
 				flowFilterPopup.add(flowFilterBottom);
 				//
 				// filter ad
 				//
-				flowFilterAd = new JLabel("", SwingConstants.CENTER);
-				flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterAd, -adHeight, SpringLayout.SOUTH, flowFilterPopup);
-				flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterAd, 0, SpringLayout.WEST, flowFilterTop);
-				flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterAd, 0, SpringLayout.SOUTH, flowFilterPopup);
-				flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterAd, 0, SpringLayout.EAST, flowFilterPopup);
-				// flowFilterAd.setBackground(new Color(255, 224, 224));
-				flowFilterAd.setBackground(new Color(240, 240, 240));
-				flowFilterAd.setOpaque(true);
-				flowFilterPopup.add(flowFilterAd);
+				// flowFilterAd = new JLabel("", SwingConstants.CENTER);
+				// flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterAd, -adHeight, SpringLayout.SOUTH, flowFilterPopup);
+				// flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterAd, 0, SpringLayout.WEST, flowFilterTop);
+				// flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterAd, 0, SpringLayout.SOUTH, flowFilterPopup);
+				// flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterAd, 0, SpringLayout.EAST, flowFilterPopup);
+				// // flowFilterAd.setBackground(new Color(255, 224, 224));
+				// flowFilterAd.setBackground(new Color(240, 240, 240));
+				// flowFilterAd.setOpaque(true);
+				// flowFilterPopup.add(flowFilterAd);
 				//
 				flowFilterPopupReady = true;
 				flowFilter.addMouseListener(new MouseAdapter() {
@@ -731,11 +732,11 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 								}
 
 							});
-							flowFilterAd.setText(ads[adIndex]);
-							adIndex += 1;
-							if (adIndex >= ads.length) {
-								adIndex = 0;
-							}
+							// flowFilterAd.setText(ads[adIndex]);
+							// adIndex += 1;
+							// if (adIndex >= ads.length) {
+							// adIndex = 0;
+							// }
 							flowFilterPopupWindow.setUndecorated(true);
 							flowFilterPopupWindow.add(flowFilterPopup);
 							flowFilterPopupWindow.pack();
