@@ -12,6 +12,12 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 ![flow-example](https://cloud.githubusercontent.com/assets/4956006/9799914/4f812d0e-580a-11e5-9309-658996517a07.png)
 
+## Known issues
+
+* If Burp "Platform Authentication" is in use, or "Match and Replace" in request is used, Flow is unable to match responses to related requests. This is caused by Burp API limitations (lack of unique identifiers in HttpRequestResponse). Problem was reported to Portswigger. As a workaround I suggest to perform platform authentication / requests altering in upstream proxy.
+
+* Gnome-shell related issue: Filter popup appears correctly only on first use.
+
 ## Download
 
 https://github.com/hvqzao/burp-flow/releases/download/v1.02/flow.jar
