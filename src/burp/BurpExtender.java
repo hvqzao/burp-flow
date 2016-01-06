@@ -55,7 +55,7 @@ import javax.swing.table.TableRowSorter;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-	// private final String version = "<html>Flow v1.02, (2015-07-24), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+	// private final String version = "<html>Flow v1.03, (2016-01-06), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
 
 	private static IBurpExtenderCallbacks callbacks;
 	private static IExtensionHelpers helpers;
@@ -709,6 +709,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 				// flowFilterPopup.add(flowFilterAd);
 				//
 				flowFilterPopupReady = true;
+				flowFilterPopupWindow.setUndecorated(true);
+				flowFilterPopupWindow.add(flowFilterPopup);
+				flowFilterPopupWindow.pack();
 				flowFilter.addMouseListener(new MouseAdapter() {
 					public void mousePressed(MouseEvent e) {
 						if (flowFilterPopupReady) {
@@ -717,7 +720,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 
 								@Override
 								public void windowLostFocus(WindowEvent e) {
-									flowFilterPopupWindow.dispose();
+									flowFilterPopupWindow.setVisible(false);
+									//flowFilterPopupWindow.dispose();
 									SwingUtilities.invokeLater(new Runnable() {
 
 										@Override
@@ -737,14 +741,13 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 							// if (adIndex >= ads.length) {
 							// adIndex = 0;
 							// }
-							flowFilterPopupWindow.setUndecorated(true);
-							flowFilterPopupWindow.add(flowFilterPopup);
-							flowFilterPopupWindow.pack();
 							// dialog.setLocationRelativeTo(null);
 							Point flowFilterPT = flowFilter.getLocationOnScreen();
 							flowFilterPopupWindow.setLocation(new Point((int) flowFilterPT.getX() - 2, flowFilterPT.y + flowFilter.getHeight() + 1));
 							flowFilterBottom.requestFocus();
 							flowFilterPopupWindow.setVisible(true);
+							//flowFilterPopupWindow.repaint();
+							//flowTab.repaint();
 						}
 					}
 				});
