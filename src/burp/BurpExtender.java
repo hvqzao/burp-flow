@@ -6,6 +6,8 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.SystemColor;
 import java.awt.Toolkit;
@@ -49,13 +51,14 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-	// private final String version = "<html>Flow v1.03, (2016-01-06), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+	// private final String version = "<html>Flow v1.04, (2016-01-15), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
 
 	private static IBurpExtenderCallbacks callbacks;
 	private static IExtensionHelpers helpers;
@@ -132,6 +135,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 	// private JLabel flowFilterAd;
 	private SeparateView separateView;
 	private JButton flowFilterHelpExt;
+	private static Color COLOR_HIGHLIGHT = new Color(255, 206, 130);
+	private static Color COLOR_DARKGRAY = new Color(240, 240, 240);
+	private static Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
 
 	public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
 		// keep a reference to our callbacks object
@@ -847,6 +853,7 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 				JScrollPane flowTableScroll = new JScrollPane(flowTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
 				flowTableScroll.setMinimumSize(new Dimension(40, 40));
 				callbacks.customizeUiComponent(flowTableScroll);
+				flowTable.setDefaultRenderer(Boolean.class, new BooleanTableCellRenderer());
 				// flowTab.setTopComponent(flowTableScroll);
 				flowTablePane.add(flowTableScroll, BorderLayout.CENTER);
 				flowTab.setTopComponent(flowTablePane);
@@ -1014,6 +1021,22 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 	//
 	// TODO misc
 	//
+
+	static Color cellBackground(int row, boolean isSelected) {
+		if (isSelected) {
+			return COLOR_HIGHLIGHT;
+		} else {
+			if (row % 20 == 1) {
+				return COLOR_DARKGRAY; // new Color(225, 225, 225);
+			} else {
+				if (row % 2 == 1) {
+					return COLOR_LIGHTGRAY; // new Color(240, 240, 240);
+				} else {
+					return Color.WHITE;
+				}
+			}
+		}
+	}
 
 	void flowFilterCaptureSourceOnly(JCheckBox which) {
 
@@ -2008,7 +2031,8 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 			} else {
 				c.setForeground(Color.black);
 			}*/
-			FlowEntry entry = flow.get(flowTable.convertRowIndexToModel(row));
+			int modelRow = table.convertRowIndexToModel(row);
+			FlowEntry entry = flow.get(modelRow);
 			int r = 0, g = 0, b = 0;
 			if (entry.status == 404 || entry.status == 403) {
 				r += 196;
@@ -2031,6 +2055,9 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 				b = 255;
 			}
 			c.setForeground(new Color(r, g, b));
+
+			c.setBackground(cellBackground(table.getRowCount() - row, isSelected));
+
 			return c;
 		}
 	}
@@ -2072,6 +2099,33 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 			dialogs.add(this);
 			setLocationRelativeTo(parent);
 			setVisible(true);
+		}
+	}
+
+	private static class BooleanTableCellRenderer extends JCheckBox implements TableCellRenderer {
+
+		private static final long serialVersionUID = 1L;
+
+		public BooleanTableCellRenderer() {
+			super();
+			setOpaque(true);
+			putClientProperty("JComponent.sizeVariant", "small");
+			SwingUtilities.updateComponentTreeUI(this);
+			setLayout(new GridBagLayout());
+			setMargin(new Insets(0, 0, 0, 0));
+			setHorizontalAlignment(JLabel.CENTER);
+			setBorderPainted(true);
+		}
+
+		@Override
+		public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
+				int row, int column) {
+			//int modelRow = table.convertRowIndexToModel(row);
+			setBackground(cellBackground(table.getRowCount() - row, isSelected));
+			if (value instanceof Boolean) {
+				setSelected((Boolean) value);
+			}
+			return this;
 		}
 	}
 
