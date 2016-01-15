@@ -20,7 +20,7 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 ## Download
 
-https://github.com/hvqzao/burp-flow/releases/download/1.03/flow.jar
+https://github.com/hvqzao/burp-flow/releases/download/1.04/flow.jar
 
 ## License
 
