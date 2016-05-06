@@ -24,4 +24,4 @@ https://github.com/hvqzao/burp-flow/releases/download/1.04/flow.jar
 
 ## License
 
-[MIT License](https://github.com/twbs/bootstrap/blob/master/LICENSE)
+[MIT License](LICENSE)
