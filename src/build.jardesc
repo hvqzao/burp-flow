@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="WINDOWS-1252" standalone="no"?>
+<?xml version="1.0" encoding="WINDOWS-1250" standalone="no"?>
 <jardesc>
     <jar path="Flow/bin/flow.jar"/>
     <options buildIfNeeded="true" compress="true" descriptionLocation="/Flow/src/build.jardesc" exportErrors="true" exportWarnings="true" includeDirectoryEntries="false" overwrite="true" saveDescription="true" storeRefactorings="false" useSourceFolders="false"/>
@@ -11,7 +11,7 @@
         </sealing>
     </manifest>
     <selectedElements exportClassFiles="true" exportJavaFiles="false" exportOutputFolder="false">
-        <javaElement handleIdentifier="=Flow/src&lt;burp"/>
         <folder path="/Flow/flow"/>
+        <javaElement handleIdentifier="=Flow/src&lt;burp"/>
     </selectedElements>
 </jardesc>

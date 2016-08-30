@@ -1,4 +1,4 @@
-// Flow Burp Extension, (c) 2015 Marcin Woloszyn (@hvqzao), Released under MIT license
+// Flow Burp Extension, (c) 2015-2016 Marcin Woloszyn (@hvqzao), Released under MIT license
 
 package burp;
 
@@ -58,7 +58,7 @@ import javax.swing.table.TableRowSorter;
 
 public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-	// private final String version = "<html>Flow v1.04, (2016-01-15), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+	// private final String version = "<html>Flow v1.05, (2016-08-30), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
 
 	private static IBurpExtenderCallbacks callbacks;
 	private static IExtensionHelpers helpers;
@@ -1596,11 +1596,29 @@ public class BurpExtender implements IBurpExtender, ITab, IHttpListener, IScopeC
 		public Class<?> getColumnClass(int columnIndex) {
 			switch (columnIndex) {
 			case 0:
-				return Integer.class;
+				return Integer.class; // "#"
+//			case 1:
+//				return "Tool";
+//			case 2:
+//				return "Host";
+//			case 3:
+//				return "Method";
+//			case 4:
+//				return "URL";
 			case 5:
-				return Boolean.class;
+				return Boolean.class; // "Params"
 			case 6:
-				return Integer.class;
+				return Integer.class; // "Count"
+			case 7:
+				return Integer.class; // "Status"
+			case 8:
+				return Integer.class; // "Length"
+//			case 9:
+//				return "MIME";
+			case 10:
+				return Date.class; // "Date"
+//			case 11:
+//				return "Comment";
 			default:
 				return String.class;
 			}
