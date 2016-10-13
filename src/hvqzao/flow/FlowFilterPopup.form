@@ -2,14 +2,20 @@
 
 <Form version="1.3" maxVersion="1.9" type="org.netbeans.modules.form.forminfo.JPanelFormInfo">
   <Properties>
-    <Property name="background" type="java.awt.Color" editor="org.netbeans.beaninfo.editors.ColorEditor">
-      <Color blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
-    </Property>
     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
-      <Border info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
-        <LineBorder>
-          <Color PropertyName="color" blue="40" green="40" id="darkGray" palette="1" red="40" type="palette"/>
-        </LineBorder>
+      <Border info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
+        <CompoundBorder>
+          <Border PropertyName="outside" info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder thickness="2">
+              <Color PropertyName="color" blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
+            </LineBorder>
+          </Border>
+          <Border PropertyName="inside" info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
+            <LineBorder>
+              <Color PropertyName="color" blue="40" green="40" id="darkGray" palette="1" red="40" type="palette"/>
+            </LineBorder>
+          </Border>
+        </CompoundBorder>
       </Border>
     </Property>
   </Properties>
@@ -28,13 +34,23 @@
   <Layout>
     <DimensionLayout dim="0">
       <Group type="103" groupAlignment="0" attributes="0">
-          <Group type="102" attributes="0">
+          <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="flowFilterHelp" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
+                  <Component id="flowFilterHelp" min="-2" pref="24" max="-2" attributes="0"/>
                   <Component id="flowFilterDefaults" alignment="0" min="-2" pref="24" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="678" max="32767" attributes="0"/>
+              <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Component id="FlowFilterBySearch" alignment="0" min="-2" max="-2" attributes="0"/>
+                  <Component id="FlowFilterByReqType" alignment="0" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="FlowFilterBySource" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="FlowFilterCaptureBySource" min="-2" max="-2" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
+              <Component id="FlowFilterBottom" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -42,10 +58,28 @@
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="flowFilterHelp" min="-2" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="0" attributes="0">
+                  <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
+                      <Component id="FlowFilterCaptureBySource" max="32767" attributes="0"/>
+                      <Component id="FlowFilterBySource" max="32767" attributes="0"/>
+                  </Group>
+                  <Group type="102" attributes="0">
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Group type="102" attributes="0">
+                              <Component id="flowFilterHelp" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="flowFilterDefaults" min="-2" max="-2" attributes="0"/>
+                          </Group>
+                          <Component id="FlowFilterByReqType" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="-2" attributes="0"/>
+                      <Group type="103" groupAlignment="0" attributes="0">
+                          <Component id="FlowFilterBySearch" alignment="0" min="-2" max="-2" attributes="0"/>
+                          <Component id="FlowFilterBottom" alignment="0" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
+              </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="flowFilterDefaults" min="-2" max="-2" attributes="0"/>
-              <EmptySpace pref="189" max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -53,7 +87,6 @@
   <SubComponents>
     <Component class="javax.swing.JButton" name="flowFilterHelp">
       <Properties>
-        <Property name="label" type="java.lang.String" value=""/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
@@ -71,7 +104,6 @@
     <Component class="javax.swing.JButton" name="flowFilterDefaults">
       <Properties>
         <Property name="inheritsPopupMenu" type="boolean" value="true"/>
-        <Property name="label" type="java.lang.String" value=""/>
         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
           <Insets value="[0, 0, 0, 0]"/>
         </Property>
@@ -89,5 +121,406 @@
         <Property name="AccessibleContext.accessibleDescription" type="java.lang.String" value=""/>
       </AccessibilityProperties>
     </Component>
+    <Container class="javax.swing.JPanel" name="FlowFilterByReqType">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Filter by request type"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="FlowFilterInscope" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterParametrized" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace min="0" pref="30" max="32767" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="FlowFilterInscope" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterParametrized" min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterInscope">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Show only in-scope items"/>
+          </Properties>
+          <AccessibilityProperties>
+            <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="FlowFilterInscope"/>
+          </AccessibilityProperties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterParametrized">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Show only parametrized requests"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="FlowFilterBySearch">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Filter by search term (regular expression)"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
+                  <Component id="FlowFilterSearchCaseSensitive" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="FlowFilterSearchNegative" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace pref="16" max="32767" attributes="0"/>
+              </Group>
+              <Component id="FlowFilterSearchField" alignment="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="FlowFilterSearchField" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSearchCaseSensitive" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSearchNegative" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JTextField" name="FlowFilterSearchField">
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSearchCaseSensitive">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Case sensitive"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSearchNegative">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Negative search"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="FlowFilterBySource">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Filter search"/>
+          </Border>
+        </Property>
+      </Properties>
+      <AccessibilityProperties>
+        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="Filter source"/>
+      </AccessibilityProperties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceExtender" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceExtenderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceSpider" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceSpiderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceScanner" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceScannerOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceRepeater" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceRepeaterOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterSourceIntruder" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceIntruderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceProxy" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceProxyOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceSpider" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceSpiderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceScanner" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceScannerOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceRepeater" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceRepeaterOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceIntruder" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceIntruderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceExtender" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceExtenderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxy">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Proxy"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceSpider">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Spider"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceScanner">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Scanner"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceRepeater">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Repeater"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceIntruder">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Intruder"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceExtender">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Extender"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxyOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceSpiderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceScannerOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceRepeaterOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceIntruderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceExtenderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="FlowFilterCaptureBySource">
+      <Properties>
+        <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
+          <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
+            <TitledBorder title="Capture source"/>
+          </Border>
+        </Property>
+      </Properties>
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceExtender" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceExtenderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceSpider" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceSpiderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceScanner" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceScannerOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceRepeater" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceRepeaterOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <Group type="102" attributes="0">
+                  <Component id="FlowFilterCaptureSourceIntruder" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceIntruderOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceProxy" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceProxyOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceSpider" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceSpiderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceScanner" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceScannerOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceRepeater" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceRepeaterOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceIntruder" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceIntruderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceExtender" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceExtenderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+              </Group>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+      <SubComponents>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxy">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Proxy"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxyOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceSpider">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Spider"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceScanner">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Scanner"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceRepeater">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Repeater"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceIntruder">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Intruder"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceExtender">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Extender"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceSpiderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceScannerOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceRepeaterOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceIntruderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceExtenderOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
+      </SubComponents>
+    </Container>
+    <Container class="javax.swing.JPanel" name="FlowFilterBottom">
+
+      <Layout>
+        <DimensionLayout dim="0">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="8" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+        <DimensionLayout dim="1">
+          <Group type="103" groupAlignment="0" attributes="0">
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+          </Group>
+        </DimensionLayout>
+      </Layout>
+    </Container>
   </SubComponents>
 </Form>

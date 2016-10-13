@@ -63,11 +63,12 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
-import java.io.PrintWriter;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    // private final String version = "<html>Flow v1.05, (2016-08-30), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+    // private final String version = "<html>Flow v1.06, (2016-10-13), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
     // private static PrintWriter stdout;
@@ -146,13 +147,9 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private static final Color COLOR_HIGHLIGHT = new Color(255, 206, 130);
     private static final Color COLOR_DARKGRAY = new Color(240, 240, 240);
     private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
-    private PrintWriter stdout;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
-
-        stdout = new PrintWriter(callbacks.getStdout(), true);
-//        stdout.println("DEVEL hello");
 
         // keep a reference to our callbacks object
         BurpExtension.callbacks = callbacks;
@@ -228,499 +225,86 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 };
                 // layout
                 final JDialog flowFilterPopupWindow = new JDialog();
-
-//                stdout.println("DEVEL BPANE");
-                /*
-                final JPanel flowFilterPopup = new JPanel();
-                flowFilterPopup.setPreferredSize(new Dimension(470 + 165, 223 /*+ adHeight*/
- /*)); // filter popup dimension
-                flowFilterPopup.setBorder(BorderFactory.createLineBorder(Color.darkGray));
-                flowFilterPopup.setBackground(Color.white);
-                SpringLayout flowFilterLayout = new SpringLayout();
-                flowFilterPopup.setLayout(flowFilterLayout);
-                //
-                JPanel flowFilterTop = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterTop, 1, SpringLayout.NORTH, flowFilterPopup);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterTop, 4, SpringLayout.NORTH, flowFilterPopup);
-                flowFilterTop.setBackground(SystemColor.menu);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterTop, 0, SpringLayout.WEST, flowFilterPopup);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterTop, 0, SpringLayout.EAST, flowFilterPopup);
-                flowFilterPopup.add(flowFilterTop);
-                //
-                JButton flowFilterHelp = new JButton(iconHelp);
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterHelp, 16, SpringLayout.NORTH, flowFilterTop);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterHelp, 12, SpringLayout.WEST, flowFilterTop);
-                flowFilterHelp.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-                flowFilterHelp.setPreferredSize(iconDimension);
-                flowFilterHelp.setMaximumSize(iconDimension);
-                flowFilterHelp.setEnabled(false);
-                callbacks.customizeUiComponent(flowFilterHelp);
-                flowFilterPopup.add(flowFilterHelp);
-                //
-                JButton flowFilterDefaults = new JButton(iconDefaults);
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterDefaults, 8, SpringLayout.SOUTH, flowFilterHelp);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterDefaults, 0, SpringLayout.WEST, flowFilterHelp);
-                flowFilterDefaults.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
-                flowFilterDefaults.setPreferredSize(iconDimension);
-                flowFilterDefaults.setMaximumSize(iconDimension);
-                callbacks.customizeUiComponent(flowFilterDefaults);
-                flowFilterDefaults.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSetDefaults();
-                }
-                });
-                flowFilterPopup.add(flowFilterDefaults);
-                //
-                JLabel flowFilterByReqTypeLabel = new JLabel("Filter by request type");
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterByReqTypeLabel, 12, SpringLayout.SOUTH, flowFilterTop);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterByReqTypeLabel, 20, SpringLayout.EAST, flowFilterHelp);
-                flowFilterPopup.add(flowFilterByReqTypeLabel);
-                //
-                JPanel flowFilterByReqType = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterByReqType, 0, SpringLayout.SOUTH, flowFilterByReqTypeLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterByReqType, 16, SpringLayout.EAST, flowFilterHelp);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterByReqType, 60, SpringLayout.SOUTH, flowFilterByReqTypeLabel);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterByReqType, 240, SpringLayout.EAST, flowFilterHelp);
-                flowFilterByReqType.setBackground(Color.white);
-                // flowFilterByReqType.setBorder(BorderFactory.createTitledBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED,
-                // null, null, null, null), "Filter by request type",
-                // TitledBorder.LEADING, TitledBorder.ABOVE_TOP, null,
-                // Color.red));
-                flowFilterByReqType.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-                flowFilterPopup.add(flowFilterByReqType);
-                SpringLayout flowFilterByReqTypeLayout = new SpringLayout();
-                flowFilterByReqType.setLayout(flowFilterByReqTypeLayout);
-                //
-                flowFilterInscope = new JCheckBox("Show only in-scope items");
-                flowFilterByReqTypeLayout.putConstraint(SpringLayout.NORTH, flowFilterInscope, 10, SpringLayout.NORTH, flowFilterByReqType);
-                flowFilterByReqTypeLayout.putConstraint(SpringLayout.WEST, flowFilterInscope, 12, SpringLayout.WEST, flowFilterByReqType);
-                flowFilterInscope.setBackground(Color.white);
-                flowFilterByReqType.add(flowFilterInscope);
-                flowFilterInscope.addActionListener(flowFilterScopeUpdateAction);
+                FlowFilterPopup flowFilterPopup = new FlowFilterPopup();
+                flowFilterCaptureSourceExtender = flowFilterPopup.getFlowFilterCaptureSourceExtender();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceExtender);
+                flowFilterCaptureSourceExtenderOnly = flowFilterPopup.getFlowFilterCaptureSourceExtenderOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceExtenderOnly);
+                flowFilterCaptureSourceIntruder = flowFilterPopup.getFlowFilterCaptureSourceIntruder();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruder);
+                flowFilterCaptureSourceIntruderOnly = flowFilterPopup.getFlowFilterCaptureSourceIntruderOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruderOnly);
+                flowFilterCaptureSourceProxy = flowFilterPopup.getFlowFilterCaptureSourceProxy();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceProxy);
+                flowFilterCaptureSourceProxyOnly = flowFilterPopup.getFlowFilterCaptureSourceProxyOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceProxyOnly);
+                flowFilterCaptureSourceRepeater = flowFilterPopup.getFlowFilterCaptureSourceRepeater();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeater);
+                flowFilterCaptureSourceRepeaterOnly = flowFilterPopup.getFlowFilterCaptureSourceRepeaterOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeaterOnly);
+                flowFilterCaptureSourceScanner = flowFilterPopup.getFlowFilterCaptureSourceScanner();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceScanner);
+                flowFilterCaptureSourceScannerOnly = flowFilterPopup.getFlowFilterCaptureSourceScannerOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceScannerOnly);
+                flowFilterCaptureSourceSpider = flowFilterPopup.getFlowFilterCaptureSourceSpider();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceSpider);
+                flowFilterCaptureSourceSpiderOnly = flowFilterPopup.getFlowFilterCaptureSourceSpiderOnly();
+                callbacks.customizeUiComponent(flowFilterCaptureSourceSpiderOnly);
+                flowFilterInscope = flowFilterPopup.getFlowFilterInscope();
                 callbacks.customizeUiComponent(flowFilterInscope);
-                //
-                flowFilterParametrized = new JCheckBox("Show only parametrized requests");
-                flowFilterByReqTypeLayout.putConstraint(SpringLayout.NORTH, flowFilterParametrized, 7, SpringLayout.SOUTH, flowFilterInscope);
-                flowFilterByReqTypeLayout.putConstraint(SpringLayout.WEST, flowFilterParametrized, 0, SpringLayout.WEST, flowFilterInscope);
-                flowFilterParametrized.setBackground(Color.WHITE);
-                flowFilterByReqType.add(flowFilterParametrized);
-                flowFilterParametrized.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterParametrized = flowFilterPopup.getFlowFilterParametrized();
                 callbacks.customizeUiComponent(flowFilterParametrized);
-                //
-                JLabel flowFilterBySearchLabel = new JLabel("Filter by search term (regular expression)");
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBySearchLabel, 12, SpringLayout.SOUTH, flowFilterByReqType);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBySearchLabel, 25, SpringLayout.EAST, flowFilterHelp);
-                flowFilterPopup.add(flowFilterBySearchLabel);
-                //
-                JPanel flowFilterBySearch = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBySearch, 0, SpringLayout.SOUTH, flowFilterBySearchLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBySearch, 0, SpringLayout.WEST, flowFilterByReqType);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterBySearch, 80, SpringLayout.SOUTH, flowFilterBySearchLabel);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterBySearch, 0, SpringLayout.EAST, flowFilterByReqType);
-                flowFilterBySearch.setBackground(Color.WHITE);
-                // flowFilterBySearch.setBorder(new TitledBorder(new
-                // BevelBorder(BevelBorder.LOWERED, null, null, null, null),
-                // "Filter by search term (regular expression)",
-                // TitledBorder.LEADING, TitledBorder.ABOVE_TOP, null, null));
-                flowFilterBySearch.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-                flowFilterPopup.add(flowFilterBySearch);
-                SpringLayout flowFilterBySearchLayout = new SpringLayout();
-                flowFilterBySearch.setLayout(flowFilterBySearchLayout);
-                //
-                flowFilterSearchField = new JTextField();
-                flowFilterBySearchLayout.putConstraint(SpringLayout.NORTH, flowFilterSearchField, 12, SpringLayout.NORTH, flowFilterBySearch);
-                flowFilterBySearchLayout.putConstraint(SpringLayout.WEST, flowFilterSearchField, 12, SpringLayout.WEST, flowFilterBySearch);
-                flowFilterBySearchLayout.putConstraint(SpringLayout.EAST, flowFilterSearchField, -12, SpringLayout.EAST, flowFilterBySearch);
-                // flowFilterSearchField.addActionListener(flowScopeUpdateAction);
-                flowFilterSearchField.getDocument().addDocumentListener(new DocumentListener() {
-                @Override
-                public void removeUpdate(DocumentEvent e) {
-                process();
-                }
-                @Override
-                public void insertUpdate(DocumentEvent e) {
-                process();
-                }
-                @Override
-                public void changedUpdate(DocumentEvent e) {
-                process();
-                }
-                private void process() {
-                flowFilterUpdate();
-                }
-                });
-                flowFilterBySearch.add(flowFilterSearchField);
-                // flowFilterSearchField.setFocusable(false);
-                // flowFilterSearchField.setColumns(10);
-                //
-                flowFilterSearchCaseSensitive = new JCheckBox("Case sensitive");
-                flowFilterBySearchLayout.putConstraint(SpringLayout.NORTH, flowFilterSearchCaseSensitive, 7, SpringLayout.SOUTH, flowFilterSearchField);
-                flowFilterSearchCaseSensitive.setBackground(Color.white);
-                flowFilterBySearchLayout.putConstraint(SpringLayout.WEST, flowFilterSearchCaseSensitive, 12, SpringLayout.WEST, flowFilterBySearch);
+                flowFilterSearchCaseSensitive = flowFilterPopup.getFlowFilterSearchCaseSensitive();
                 callbacks.customizeUiComponent(flowFilterSearchCaseSensitive);
-                flowFilterSearchCaseSensitive.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySearch.add(flowFilterSearchCaseSensitive);
-                //
-                flowFilterSearchNegative = new JCheckBox("Negative search");
-                flowFilterBySearchLayout.putConstraint(SpringLayout.NORTH, flowFilterSearchNegative, 7, SpringLayout.SOUTH, flowFilterSearchField);
-                flowFilterBySearchLayout.putConstraint(SpringLayout.WEST, flowFilterSearchNegative, 10, SpringLayout.EAST, flowFilterSearchCaseSensitive);
-                flowFilterSearchNegative.setBackground(Color.white);
+                flowFilterSearchField = flowFilterPopup.getFlowFilterSearchField();
+                callbacks.customizeUiComponent(flowFilterSearchField);
+                flowFilterSearchNegative = flowFilterPopup.getFlowFilterSearchNegative();
                 callbacks.customizeUiComponent(flowFilterSearchNegative);
-                flowFilterSearchNegative.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySearch.add(flowFilterSearchNegative);
-                //
-                JLabel flowFilterBySourceLabel = new JLabel("Filter source");
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBySourceLabel, 0, SpringLayout.NORTH, flowFilterByReqTypeLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBySourceLabel, 25, SpringLayout.EAST, flowFilterByReqType);
-                flowFilterPopup.add(flowFilterBySourceLabel);
-                //
-                JPanel flowFilterBySource = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBySource, 0, SpringLayout.SOUTH, flowFilterBySourceLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBySource, 17, SpringLayout.EAST, flowFilterByReqType);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterBySource, 0, SpringLayout.SOUTH, flowFilterBySearch);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterBySource, 165, SpringLayout.EAST, flowFilterByReqType);
-                // flowFilterBySource.setBorder(new TitledBorder(new
-                // BevelBorder(BevelBorder.LOWERED, null, null, null, null),
-                // "Capture and filter source", TitledBorder.LEADING,
-                // TitledBorder.ABOVE_TOP, null, null));
-                flowFilterBySource.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-                flowFilterBySource.setBackground(Color.white);
-                flowFilterPopup.add(flowFilterBySource);
-                SpringLayout flowFilterBySourceLayout = new SpringLayout();
-                flowFilterBySource.setLayout(flowFilterBySourceLayout);
-                //
-                flowFilterSourceProxy = new JCheckBox("Proxy");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceProxy, 11, SpringLayout.NORTH, flowFilterBySource);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceProxy, 12, SpringLayout.WEST, flowFilterBySource);
-                flowFilterSourceProxy.setBackground(Color.white);
-                flowFilterSourceProxy.setSelected(true);
-                flowFilterSourceProxyOnlyOrig = true;
+                flowFilterSourceExtender = flowFilterPopup.getFlowFilterSourceExtender();
+                callbacks.customizeUiComponent(flowFilterSourceExtender);
+                flowFilterSourceExtenderOnly = flowFilterPopup.getFlowFilterSourceExtenderOnly();
+                callbacks.customizeUiComponent(flowFilterSourceExtenderOnly);
+                flowFilterSourceIntruder = flowFilterPopup.getFlowFilterSourceIntruder();
+                callbacks.customizeUiComponent(flowFilterSourceIntruder);
+                flowFilterSourceIntruderOnly = flowFilterPopup.getFlowFilterSourceIntruderOnly();
+                callbacks.customizeUiComponent(flowFilterSourceIntruderOnly);
+                flowFilterSourceProxy = flowFilterPopup.getFlowFilterSourceProxy();
                 callbacks.customizeUiComponent(flowFilterSourceProxy);
-                flowFilterSourceProxy.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceProxy);
-                //
-                flowFilterSourceSpider = new JCheckBox("Spider");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceSpider, 9, SpringLayout.SOUTH, flowFilterSourceProxy);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceSpider, 12, SpringLayout.WEST, flowFilterBySource);
-                flowFilterSourceSpider.setBackground(Color.white);
+                flowFilterSourceProxyOnly = flowFilterPopup.getFlowFilterSourceProxyOnly();
+                callbacks.customizeUiComponent(flowFilterSourceProxyOnly);
+                flowFilterSourceRepeater = flowFilterPopup.getFlowFilterSourceRepeater();
+                callbacks.customizeUiComponent(flowFilterSourceRepeater);
+                flowFilterSourceRepeaterOnly = flowFilterPopup.getFlowFilterSourceRepeaterOnly();
+                callbacks.customizeUiComponent(flowFilterSourceRepeaterOnly);
+                flowFilterSourceScanner = flowFilterPopup.getFlowFilterSourceScanner();
+                callbacks.customizeUiComponent(flowFilterSourceScanner);
+                flowFilterSourceScannerOnly = flowFilterPopup.getFlowFilterSourceScannerOnly();
+                callbacks.customizeUiComponent(flowFilterSourceScannerOnly);
+                flowFilterSourceSpider = flowFilterPopup.getFlowFilterSourceSpider();
+                callbacks.customizeUiComponent(flowFilterSourceSpider);
+                flowFilterSourceSpiderOnly = flowFilterPopup.getFlowFilterSourceSpiderOnly();
+                callbacks.customizeUiComponent(flowFilterSourceSpiderOnly);
+                flowFilterBottom = flowFilterPopup.getFlowFilterBottom();
+
+                flowFilterSourceProxyOnlyOrig = true;
                 flowFilterSourceSpider.setSelected(true);
                 flowFilterSourceSpiderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterSourceSpider);
-                flowFilterSourceSpider.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceSpider);
-                //
-                flowFilterSourceScanner = new JCheckBox("Scanner");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceScanner, 9, SpringLayout.SOUTH, flowFilterSourceSpider);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceScanner, 0, SpringLayout.WEST, flowFilterSourceProxy);
                 flowFilterSourceScanner.setEnabled(!burpFree);
                 flowFilterSourceScanner.setSelected(!burpFree);
+                flowFilterSourceScannerOnly.setEnabled(!burpFree);
                 flowFilterSourceScannerOnlyOrig = !burpFree;
-                flowFilterSourceScanner.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceScanner);
-                flowFilterSourceScanner.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceScanner);
-                //
-                flowFilterSourceRepeater = new JCheckBox("Repeater");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceRepeater, 9, SpringLayout.SOUTH, flowFilterSourceScanner);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceRepeater, 12, SpringLayout.WEST, flowFilterBySource);
-                flowFilterSourceRepeater.setBackground(Color.white);
                 flowFilterSourceRepeater.setSelected(true);
                 flowFilterSourceRepeaterOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterSourceRepeater);
-                flowFilterSourceRepeater.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceRepeater);
-                //
-                flowFilterSourceIntruder = new JCheckBox("Intruder");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceIntruder, 9, SpringLayout.SOUTH, flowFilterSourceRepeater);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceIntruder, 12, SpringLayout.WEST, flowFilterBySource);
-                flowFilterSourceIntruder.setBackground(Color.white);
                 flowFilterSourceIntruder.setSelected(true);
                 flowFilterSourceIntruderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterSourceIntruder);
-                flowFilterSourceIntruder.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceIntruder);
-                //
-                flowFilterSourceExtender = new JCheckBox("Extender");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceExtender, 9, SpringLayout.SOUTH, flowFilterSourceIntruder);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceExtender, 0, SpringLayout.WEST, flowFilterSourceProxy);
-                flowFilterSourceExtender.setBackground(Color.white);
                 flowFilterSourceExtender.setSelected(true);
                 flowFilterSourceExtenderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterSourceExtender);
-                flowFilterSourceExtender.addActionListener(flowFilterScopeUpdateAction);
-                flowFilterBySource.add(flowFilterSourceExtender);
-                //
-                flowFilterSourceProxyOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceProxyOnly, 0, SpringLayout.NORTH, flowFilterSourceProxy);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceProxyOnly, 24, SpringLayout.EAST, flowFilterSourceProxy);
-                flowFilterSourceProxyOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceProxyOnly);
-                flowFilterSourceProxyOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceProxyOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceProxyOnly);
-                //
-                flowFilterSourceSpiderOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceSpiderOnly, 0, SpringLayout.NORTH, flowFilterSourceSpider);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceSpiderOnly, 0, SpringLayout.WEST, flowFilterSourceProxyOnly);
-                flowFilterSourceSpiderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceSpiderOnly);
-                flowFilterSourceSpiderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceSpiderOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceSpiderOnly);
-                //
-                flowFilterSourceScannerOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceScannerOnly, 0, SpringLayout.NORTH, flowFilterSourceScanner);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceScannerOnly, 0, SpringLayout.WEST, flowFilterSourceProxyOnly);
-                flowFilterSourceScannerOnly.setEnabled(!burpFree);
-                flowFilterSourceScannerOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceScannerOnly);
-                flowFilterSourceScannerOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceScannerOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceScannerOnly);
-                //
-                flowFilterSourceRepeaterOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceRepeaterOnly, 0, SpringLayout.NORTH, flowFilterSourceRepeater);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceRepeaterOnly, 0, SpringLayout.WEST, flowFilterSourceProxyOnly);
-                flowFilterSourceRepeaterOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceRepeaterOnly);
-                flowFilterSourceRepeaterOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceRepeaterOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceRepeaterOnly);
-                //
-                flowFilterSourceIntruderOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceIntruderOnly, 0, SpringLayout.NORTH, flowFilterSourceIntruder);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceIntruderOnly, 0, SpringLayout.WEST, flowFilterSourceProxyOnly);
-                flowFilterSourceIntruderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceIntruderOnly);
-                flowFilterSourceIntruderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceIntruderOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceIntruderOnly);
-                //
-                flowFilterSourceExtenderOnly = new JCheckBox("Only");
-                flowFilterBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterSourceExtenderOnly, 0, SpringLayout.NORTH, flowFilterSourceExtender);
-                flowFilterBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterSourceExtenderOnly, 0, SpringLayout.WEST, flowFilterSourceProxyOnly);
-                flowFilterSourceExtenderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterSourceExtenderOnly);
-                flowFilterSourceExtenderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterSourceOnly(flowFilterSourceExtenderOnly);
-                }
-                });
-                flowFilterBySource.add(flowFilterSourceExtenderOnly);
-                //
-                JLabel flowFilterCaptureBySourceLabel = new JLabel("Capture source");
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureBySourceLabel, 0, SpringLayout.NORTH, flowFilterByReqTypeLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureBySourceLabel, 25, SpringLayout.EAST, flowFilterBySource);
-                flowFilterPopup.add(flowFilterCaptureBySourceLabel);
-                //
-                JPanel flowFilterCaptureBySource = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureBySource, 0, SpringLayout.SOUTH, flowFilterCaptureBySourceLabel);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureBySource, 25, SpringLayout.EAST, flowFilterBySource);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterCaptureBySource, 0, SpringLayout.SOUTH, flowFilterBySearch);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterCaptureBySource, 165, SpringLayout.EAST, flowFilterBySource);
-                // flowFilterCaptureBySource.setBorder(new TitledBorder(new
-                // BevelBorder(BevelBorder.LOWERED, null, null, null, null),
-                // "Capture and filter source", TitledBorder.LEADING,
-                // TitledBorder.ABOVE_TOP, null, null));
-                flowFilterCaptureBySource.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED, null, null, null, null));
-                flowFilterCaptureBySource.setBackground(Color.white);
-                flowFilterPopup.add(flowFilterCaptureBySource);
-                SpringLayout flowFilterCaptureBySourceLayout = new SpringLayout();
-                flowFilterCaptureBySource.setLayout(flowFilterCaptureBySourceLayout);
-                //
-                flowFilterCaptureSourceProxy = new JCheckBox("Proxy");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceProxy, 11, SpringLayout.NORTH, flowFilterCaptureBySource);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceProxy, 12, SpringLayout.WEST, flowFilterCaptureBySource);
-                flowFilterCaptureSourceProxy.setBackground(Color.white);
-                flowFilterCaptureSourceProxy.setSelected(true);
-                flowFilterCaptureSourceProxyOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterCaptureSourceProxy);
-                flowFilterCaptureSourceProxy.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceProxy);
-                //
-                flowFilterCaptureSourceSpider = new JCheckBox("Spider");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceSpider, 9, SpringLayout.SOUTH, flowFilterCaptureSourceProxy);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceSpider, 12, SpringLayout.WEST, flowFilterCaptureBySource);
-                flowFilterCaptureSourceSpider.setBackground(Color.white);
-                flowFilterCaptureSourceSpider.setSelected(true);
-                flowFilterCaptureSourceSpiderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterCaptureSourceSpider);
-                flowFilterCaptureSourceSpider.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceSpider);
-                //
-                flowFilterCaptureSourceScanner = new JCheckBox("Scanner");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceScanner, 9, SpringLayout.SOUTH, flowFilterCaptureSourceSpider);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceScanner, 0, SpringLayout.WEST, flowFilterCaptureSourceProxy);
                 flowFilterCaptureSourceScanner.setEnabled(!burpFree);
                 flowFilterCaptureSourceScanner.setSelected(!burpFree);
-                flowFilterCaptureSourceScannerOnlyOrig = !burpFree;
-                flowFilterCaptureSourceScanner.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceScanner);
-                flowFilterCaptureSourceScanner.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceScanner);
-                //
-                flowFilterCaptureSourceRepeater = new JCheckBox("Repeater");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceRepeater, 9, SpringLayout.SOUTH, flowFilterCaptureSourceScanner);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceRepeater, 12, SpringLayout.WEST, flowFilterCaptureBySource);
-                flowFilterCaptureSourceRepeater.setBackground(Color.white);
-                flowFilterCaptureSourceRepeater.setSelected(true);
-                flowFilterCaptureSourceRepeaterOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeater);
-                flowFilterCaptureSourceRepeater.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceRepeater);
-                //
-                flowFilterCaptureSourceIntruder = new JCheckBox("Intruder");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceIntruder, 9, SpringLayout.SOUTH, flowFilterCaptureSourceRepeater);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceIntruder, 12, SpringLayout.WEST, flowFilterCaptureBySource);
-                flowFilterCaptureSourceIntruder.setBackground(Color.white);
-                flowFilterCaptureSourceIntruder.setSelected(true);
-                flowFilterCaptureSourceIntruderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruder);
-                flowFilterCaptureSourceIntruder.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceIntruder);
-                //
-                flowFilterCaptureSourceExtender = new JCheckBox("Extender");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceExtender, 9, SpringLayout.SOUTH, flowFilterCaptureSourceIntruder);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceExtender, 0, SpringLayout.WEST, flowFilterCaptureSourceProxy);
-                flowFilterCaptureSourceExtender.setBackground(Color.white);
-                flowFilterCaptureSourceExtender.setSelected(true);
-                flowFilterCaptureSourceExtenderOnlyOrig = true;
-                callbacks.customizeUiComponent(flowFilterCaptureSourceExtender);
-                flowFilterCaptureSourceExtender.addActionListener(flowFilterCaptureScopeUpdateAction);
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceExtender);
-                //
-                flowFilterCaptureSourceProxyOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceProxyOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceProxy);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceProxyOnly, 24, SpringLayout.EAST, flowFilterCaptureSourceProxy);
-                flowFilterCaptureSourceProxyOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceProxyOnly);
-                flowFilterCaptureSourceProxyOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceProxyOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceProxyOnly);
-                //
-                flowFilterCaptureSourceSpiderOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceSpiderOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceSpider);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceSpiderOnly, 0, SpringLayout.WEST, flowFilterCaptureSourceProxyOnly);
-                flowFilterCaptureSourceSpiderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceSpiderOnly);
-                flowFilterCaptureSourceSpiderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceSpiderOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceSpiderOnly);
-                //
-                flowFilterCaptureSourceScannerOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceScannerOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceScanner);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceScannerOnly, 0, SpringLayout.WEST, flowFilterCaptureSourceProxyOnly);
                 flowFilterCaptureSourceScannerOnly.setEnabled(!burpFree);
-                flowFilterCaptureSourceScannerOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceScannerOnly);
-                flowFilterCaptureSourceScannerOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceScannerOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceScannerOnly);
-                //
-                flowFilterCaptureSourceRepeaterOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceRepeaterOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceRepeater);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceRepeaterOnly, 0, SpringLayout.WEST, flowFilterCaptureSourceProxyOnly);
-                flowFilterCaptureSourceRepeaterOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeaterOnly);
-                flowFilterCaptureSourceRepeaterOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceRepeaterOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceRepeaterOnly);
-                //
-                flowFilterCaptureSourceIntruderOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceIntruderOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceIntruder);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceIntruderOnly, 0, SpringLayout.WEST, flowFilterCaptureSourceProxyOnly);
-                flowFilterCaptureSourceIntruderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruderOnly);
-                flowFilterCaptureSourceIntruderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceIntruderOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceIntruderOnly);
-                //
-                flowFilterCaptureSourceExtenderOnly = new JCheckBox("Only");
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.NORTH, flowFilterCaptureSourceExtenderOnly, 0, SpringLayout.NORTH, flowFilterCaptureSourceExtender);
-                flowFilterCaptureBySourceLayout.putConstraint(SpringLayout.WEST, flowFilterCaptureSourceExtenderOnly, 0, SpringLayout.WEST, flowFilterCaptureSourceProxyOnly);
-                flowFilterCaptureSourceExtenderOnly.setBackground(Color.white);
-                callbacks.customizeUiComponent(flowFilterCaptureSourceExtenderOnly);
-                flowFilterCaptureSourceExtenderOnly.addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                flowFilterCaptureSourceOnly(flowFilterCaptureSourceExtenderOnly);
-                }
-                });
-                flowFilterCaptureBySource.add(flowFilterCaptureSourceExtenderOnly);
-                //
-                // filter layout
-                //
-                flowFilterBottom = new JPanel();
-                flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterBottom, -4 /*-adHeight*/
- /*, SpringLayout.SOUTH, flowFilterPopup);
-                flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterBottom, 0, SpringLayout.WEST, flowFilterTop);
-                flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterBottom, 0 /*-adHeight*/
- /*, SpringLayout.SOUTH, flowFilterPopup);
-                flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterBottom, 0, SpringLayout.EAST, flowFilterPopup);
-                flowFilterBottom.setBackground(SystemColor.menu);
-                // flowFilterBottom.setBackground(new Color(247, 247, 247));
-                // flowFilterBottom.setBackground(new Color(255, 0, 0));
-                flowFilterPopup.add(flowFilterBottom);
-                //
-                // filter ad
-                //
-                // flowFilterAd = new JLabel("", SwingConstants.CENTER);
-                // flowFilterLayout.putConstraint(SpringLayout.NORTH, flowFilterAd, -adHeight, SpringLayout.SOUTH, flowFilterPopup);
-                // flowFilterLayout.putConstraint(SpringLayout.WEST, flowFilterAd, 0, SpringLayout.WEST, flowFilterTop);
-                // flowFilterLayout.putConstraint(SpringLayout.SOUTH, flowFilterAd, 0, SpringLayout.SOUTH, flowFilterPopup);
-                // flowFilterLayout.putConstraint(SpringLayout.EAST, flowFilterAd, 0, SpringLayout.EAST, flowFilterPopup);
-                // // flowFilterAd.setBackground(new Color(255, 224, 224));
-                // flowFilterAd.setBackground(new Color(240, 240, 240));
-                // flowFilterAd.setOpaque(true);
-                // flowFilterPopup.add(flowFilterAd);
-                //
-                 */
-                //stdout.println("DEVEL MPANE");
-                FlowFilterPopup flowFilterPopup = new FlowFilterPopup();
-
-                //stdout.println("DEVEL COPY FROM ABOVE");
+                flowFilterCaptureSourceScannerOnly.setSelected(!burpFree);
+                flowFilterCaptureSourceScannerOnlyOrig = !burpFree;
+                
                 JButton flowFilterHelp;
                 flowFilterHelp = flowFilterPopup.getFlowFilterHelp();
                 flowFilterHelp.setIcon(iconHelp);
@@ -734,11 +318,122 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterDefaults.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        // TODO
-                        //flowFilterSetDefaults();
+                        flowFilterSetDefaults();
                     }
                 });
 
+                flowFilterSearchField.getDocument().addDocumentListener(new DocumentListener() {
+                    @Override
+                    public void removeUpdate(DocumentEvent e) {
+                        process();
+                    }
+
+                    @Override
+                    public void insertUpdate(DocumentEvent e) {
+                        process();
+                    }
+
+                    @Override
+                    public void changedUpdate(DocumentEvent e) {
+                        process();
+                    }
+
+                    private void process() {
+                        flowFilterUpdate();
+                    }
+                });
+                flowFilterInscope.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterParametrized.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSearchCaseSensitive.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSearchNegative.addActionListener(flowFilterScopeUpdateAction);
+
+                flowFilterSourceProxy.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceSpider.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceScanner.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceRepeater.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceIntruder.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceExtender.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSourceProxyOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceProxyOnly);
+                    }
+                });
+                flowFilterSourceSpiderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceSpiderOnly);
+                    }
+                });
+                flowFilterSourceScannerOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceScannerOnly);
+                    }
+                });
+                flowFilterSourceRepeaterOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceRepeaterOnly);
+                    }
+                });
+                flowFilterSourceIntruderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceIntruderOnly);
+                    }
+                });
+                flowFilterSourceExtenderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterSourceOnly(flowFilterSourceExtenderOnly);
+                    }
+                });
+
+                flowFilterCaptureSourceProxy.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceSpider.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceScanner.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceRepeater.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceIntruder.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceExtender.addActionListener(flowFilterCaptureScopeUpdateAction);
+                flowFilterCaptureSourceProxyOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceProxyOnly);
+                    }
+                });
+                flowFilterCaptureSourceSpiderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceSpiderOnly);
+                    }
+                });
+                flowFilterCaptureSourceScannerOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceScannerOnly);
+                    }
+                });
+                flowFilterCaptureSourceRepeaterOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceRepeaterOnly);
+                    }
+                });
+                flowFilterCaptureSourceIntruderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceIntruderOnly);
+                    }
+                });
+                flowFilterCaptureSourceExtenderOnly.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterCaptureSourceOnly(flowFilterCaptureSourceExtenderOnly);
+                    }
+                });
+
+                // ADDHERE
                 flowFilterPopupReady = true;
                 flowFilterPopupWindow.setUndecorated(true);
                 flowFilterPopupWindow.add(flowFilterPopup);
@@ -765,7 +460,6 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
                                 @Override
                                 public void windowGainedFocus(WindowEvent e) {
-                                    //stdout.println("DEVEL focus");
                                 }
 
                             });
@@ -776,16 +470,14 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             // }
                             // dialog.setLocationRelativeTo(null);
                             Point flowFilterPT = flowFilter.getLocationOnScreen();
-//                            stdout.println("DEVEL xyh "+String.valueOf(flowFilterPT.getX())+", "+String.valueOf(flowFilterPT.y)+", "+flowFilter.getHeight());
                             flowFilterPopupWindow.setLocation(new Point((int) flowFilterPT.getX() - 2, flowFilterPT.y + flowFilter.getHeight() + 1));
-//                            flowFilterBottom.requestFocus();
+                            flowFilterBottom.requestFocus();
                             flowFilterPopupWindow.setVisible(true);
                             //flowFilterPopupWindow.repaint();
                             //flowTab.repaint();
                         }
                     }
                 });
-//                stdout.println("DEVEL EPANE");
 
                 // filter help
                 JPanel flowFilterHelpPane = new JPanel();
@@ -2013,7 +1705,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             });
             add(delete);*/
- /*JMenuItem temp = new JMenuItem("temp");
+            /*JMenuItem temp = new JMenuItem("temp");
             temp.addActionListener(new ActionListener() {
 
                 @Override
