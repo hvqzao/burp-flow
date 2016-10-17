@@ -40,7 +40,6 @@ import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.RowFilter;
 import javax.swing.ScrollPaneConstants;
-//import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -68,11 +67,10 @@ import javax.swing.event.DocumentListener;
 
 public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    // private final String version = "<html>Flow v1.06, (2016-10-13), <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
+    private final String version = "Flow v1.06 (2016-10-13)";
+    //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
-    // private static PrintWriter stdout;
-    // private static PrintWriter stderr;
     private JPanel flowComponent;
     private JSplitPane flowTab;
     private FlowTableModel flowTableModel;
@@ -155,9 +153,6 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
         BurpExtension.callbacks = callbacks;
         // obtain an extension helpers object
         helpers = callbacks.getHelpers();
-        // stdout & stderr
-        // stdout = new PrintWriter(callbacks.getStdout(), true);
-        // stderr = new PrintWriter(callbacks.getStderr(), true);
         // set extension name
         callbacks.setExtensionName("Flow");
         // detect burp
@@ -304,7 +299,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterCaptureSourceScannerOnly.setEnabled(!burpFree);
                 flowFilterCaptureSourceScannerOnly.setSelected(!burpFree);
                 flowFilterCaptureSourceScannerOnlyOrig = !burpFree;
-                
+
                 JButton flowFilterHelp;
                 flowFilterHelp = flowFilterPopup.getFlowFilterHelp();
                 flowFilterHelp.setIcon(iconHelp);
@@ -433,7 +428,6 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     }
                 });
 
-                // ADDHERE
                 flowFilterPopupReady = true;
                 flowFilterPopupWindow.setUndecorated(true);
                 flowFilterPopupWindow.add(flowFilterPopup);
@@ -488,6 +482,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterHelpExt.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
                 flowFilterHelpExt.setPreferredSize(iconDimension);
                 flowFilterHelpExt.setMaximumSize(iconDimension);
+                flowFilterHelpExt.setToolTipText(version);
                 callbacks.customizeUiComponent(flowFilterHelpExt);
                 flowFilterHelpExt.setEnabled(true);
                 flowFilterHelpPane.add(flowFilterHelpExt);
@@ -1309,14 +1304,14 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
             switch (columnIndex) {
                 case 0:
                     return Integer.class; // "#"
-//			case 1:
-//				return "Tool";
-//			case 2:
-//				return "Host";
-//			case 3:
-//				return "Method";
-//			case 4:
-//				return "URL";
+                //case 1:
+                //        return "Tool";
+                //case 2:
+                //        return "Host";
+                //case 3:
+                //        return "Method";
+                //case 4:
+                //        return "URL";
                 case 5:
                     return Boolean.class; // "Params"
                 case 6:
@@ -1325,12 +1320,12 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     return Integer.class; // "Status"
                 case 8:
                     return Integer.class; // "Length"
-//			case 9:
-//				return "MIME";
+                //case 9:
+                //        return "MIME";
                 case 10:
                     return Date.class; // "Date"
-//			case 11:
-//				return "Comment";
+                //case 11:
+                //        return "Comment";
                 default:
                     return String.class;
             }
@@ -1705,7 +1700,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             });
             add(delete);*/
-            /*JMenuItem temp = new JMenuItem("temp");
+ /*JMenuItem temp = new JMenuItem("temp");
             temp.addActionListener(new ActionListener() {
 
                 @Override

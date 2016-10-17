@@ -18,6 +18,10 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 * ~~Gnome-shell related issue: Filter popup appears correctly only on first use. Resizing Burp window helps.~~ Fixed
 
+## Changelog
+
+2016-10-13 - 1.06 - updated filter popup UI
+
 ## Download
 
 https://github.com/hvqzao/burp-flow/releases/download/1.04/flow.jar
