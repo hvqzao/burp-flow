@@ -62,6 +62,7 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
+import javax.swing.JMenu;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -76,7 +77,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private FlowTableModel flowTableModel;
     private TableRowSorter<FlowTableModel> flowTableSorter;
     private final ArrayList<FlowEntry> flow = new ArrayList<>();
-    private static final ArrayList<FlowEntry> flowIncomplete = new ArrayList<>();
+    private static final ArrayList<FlowEntry> FLOW_INCOMPLETE = new ArrayList<>();
     private FlowTable flowTable;
     private FlowEntryEditor flowEntryEditor;
     private IMessageEditor flowReqView;
@@ -627,7 +628,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 callbacks.registerScopeChangeListener(BurpExtension.this);
                 //
                 flowFilterSetDefaults();
-                // stdout.println("Loaded.");
+                //callbacks.printOutput("Loaded.");
                 // TODO end main
             }
         });
@@ -678,7 +679,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     FlowEntry flowIncompleteFound = null;
                     ArrayList<FlowEntry> flowIncompleteCleanup = new ArrayList<>();
                     Date outdated = new Date(System.currentTimeMillis() - 5 * 60 * 1000);
-                    for (FlowEntry incomplete : flowIncomplete) {
+                    for (FlowEntry incomplete : FLOW_INCOMPLETE) {
                         if (flowIncompleteFound == null) {
                             if (incomplete.toolFlag == toolFlag && incomplete.incomplete.equals(helpers.bytesToString(messageInfo.getRequest()))) {
                                 flowIncompleteFound = incomplete;
@@ -692,7 +693,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                         flowIncompleteCleanup.remove(flowIncompleteFound);
                     }
                     while (!flowIncompleteCleanup.isEmpty()) {
-                        flowIncomplete.remove(flowIncompleteCleanup.get(0));
+                        FLOW_INCOMPLETE.remove(flowIncompleteCleanup.get(0));
                         flowIncompleteCleanup.remove(0);
                     }
                     if (flowIncompleteFound != null) {
@@ -702,7 +703,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                         }
                         int row = flow.indexOf(flowIncompleteFound);
                         flowTableModel.fireTableRowsUpdated(row, row);
-                        flowIncomplete.remove(flowIncompleteFound);
+                        FLOW_INCOMPLETE.remove(flowIncompleteFound);
                     }
                     // stdout.println("[-] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()) + " [" + String.valueOf(helpers.analyzeResponse(messageInfo.getResponse()).getStatusCode()) + "]");
                     // stdout.println("    " + String.valueOf(flowIncomplete.size()) + ", match: " + String.valueOf(flowIncompleteFound != null));
@@ -1518,7 +1519,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
             byte[] response = messageInfo.getResponse();
             if (response == null) {
                 incomplete = helpers.bytesToString(messageInfo.getRequest());
-                flowIncomplete.add(this);
+                FLOW_INCOMPLETE.add(this);
             }
             boolean hasGetParams = url.getQuery() != null;
             boolean hasPostParams = messageInfoPersisted.getRequest().length - requestInfo.getBodyOffset() > 0;
@@ -1688,6 +1689,39 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
             });
             add(sendToRepeater);
             add(new Separator());
+            JMenu history = new JMenu("History");
+            add(history);
+
+            //JMenuItem saveHistory = new JMenuItem("Save history");
+            //saveHistory.addActionListener(new ActionListener() {
+            //    @Override
+            //    public void actionPerformed(ActionEvent e) {
+            //        // TODO
+            //    }
+            //});
+            //history.add(saveHistory);
+            //JMenuItem loadHistory = new JMenuItem("Load history");
+            //loadHistory.addActionListener(new ActionListener() {
+            //    @Override
+            //    public void actionPerformed(ActionEvent e) {
+            //        // TODO
+            //    }
+            //});
+            //history.add(loadHistory);
+
+            JMenuItem clearAll = new JMenuItem("Clear history");
+            clearAll.addActionListener(new ActionListener() {
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(burpFrame, "Are you sure you want to clear the history?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
+                        flowTableModel.removeAll();
+                    }
+                }
+            });
+            history.add(clearAll);
+
+            add(new Separator());
             /*JMenuItem delete = new JMenuItem("Delete");
             delete.addActionListener(new ActionListener() {
 
@@ -1733,17 +1767,6 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             });
             add(copyURL);
-            JMenuItem clearAll = new JMenuItem("Clear history");
-            clearAll.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (JOptionPane.YES_OPTION == JOptionPane.showConfirmDialog(burpFrame, "Are you sure you want to clear the history?", "Confirm", JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE)) {
-                        flowTableModel.removeAll();
-                    }
-                }
-            });
-            add(clearAll);
         }
     }
 
