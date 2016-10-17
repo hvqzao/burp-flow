@@ -20,7 +20,7 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 ## Changelog
 
-2016-10-13 - 1.06 - updated filter popup UI
+2016-10-17 - 1.06 - updated filter popup UI, extension is now initialized with current Proxy history. Detach window button have current extension version in its tool tip.
 
 ## Download
 

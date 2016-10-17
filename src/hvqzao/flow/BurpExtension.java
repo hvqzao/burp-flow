@@ -628,7 +628,11 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 callbacks.registerScopeChangeListener(BurpExtension.this);
                 //
                 flowFilterSetDefaults();
-                //callbacks.printOutput("Loaded.");
+                callbacks.printOutput("Initializing extension with contents of Burp Proxy...");
+                for (IHttpRequestResponse requestResponse: callbacks.getProxyHistory()) {
+                    flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, requestResponse));
+                }                
+                callbacks.printOutput("Loaded.");
                 // TODO end main
             }
         });
