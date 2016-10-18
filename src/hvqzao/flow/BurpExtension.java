@@ -629,9 +629,13 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 //
                 flowFilterSetDefaults();
                 callbacks.printOutput("Initializing extension with contents of Burp Proxy...");
-                for (IHttpRequestResponse requestResponse: callbacks.getProxyHistory()) {
-                    flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, requestResponse));
-                }                
+                synchronized (flow) {
+                    int row = flow.size();
+                    for (IHttpRequestResponse requestResponse : callbacks.getProxyHistory()) {
+                        flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, requestResponse));
+                    }
+                    flowTableModel.fireTableRowsInserted(row, row);
+                }
                 callbacks.printOutput("Loaded.");
                 // TODO end main
             }
@@ -1480,7 +1484,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private final int id;
         private final int toolFlag;
         private IHttpRequestResponsePersisted messageInfoPersisted;
-        // private IHttpRequestResponse messageInfo;
+        //private IHttpRequestResponse messageInfo;
         private String incomplete;
         private final String method;
         private final URL url;
@@ -1492,6 +1496,12 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private final Date date;
         private String comment;
 
+        //public String serialize() {
+        //    return "";
+        //}
+        //public static FlowEntry deserialize() {
+        //    return new FlowEntry();
+        //}
         void update(IHttpRequestResponse messageInfo) {
             // status = 999;
             // stdout.println("    Update");
@@ -1514,7 +1524,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
             this.id = FlowEntry.newID;
             FlowEntry.newID += 1;
             this.toolFlag = toolFlag;
-            // this.messageInfo = messageInfo;
+            //this.messageInfo = messageInfo;
             messageInfoPersisted = callbacks.saveBuffersToTempFiles(messageInfo);
             IRequestInfo requestInfo;
             requestInfo = helpers.analyzeRequest(messageInfo);
@@ -1712,7 +1722,6 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
             //    }
             //});
             //history.add(loadHistory);
-
             JMenuItem clearAll = new JMenuItem("Clear history");
             clearAll.addActionListener(new ActionListener() {
 
