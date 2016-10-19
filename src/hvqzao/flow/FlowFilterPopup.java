@@ -218,7 +218,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         FlowFilterCaptureSourceExtenderOnly = new javax.swing.JCheckBox();
         FlowFilterBottom = new javax.swing.JPanel();
 
-        setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.white, 2), javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray)));
+        setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.white, 2), javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5))));
 
         flowFilterHelp.setMargin(new java.awt.Insets(0, 0, 0, 0));
         flowFilterHelp.setMaximumSize(new java.awt.Dimension(24, 24));
@@ -455,7 +455,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         FlowFilterBottom.setLayout(FlowFilterBottomLayout);
         FlowFilterBottomLayout.setHorizontalGroup(
             FlowFilterBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 8, Short.MAX_VALUE)
+            .addGap(0, 0, Short.MAX_VALUE)
         );
         FlowFilterBottomLayout.setVerticalGroup(
             FlowFilterBottomLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -485,7 +485,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                         .addComponent(FlowFilterCaptureBySource, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -500,8 +500,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(FlowFilterBySearch, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(FlowFilterBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
-                .addContainerGap())
+                            .addComponent(FlowFilterBottom, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))))
         );
 
         flowFilterDefaults.getAccessibleContext().setAccessibleDescription("");
