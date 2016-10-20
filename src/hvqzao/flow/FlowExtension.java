@@ -66,7 +66,7 @@ import javax.swing.JMenu;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
+public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
     private final String version = "Flow v1.06 (2016-10-13)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
@@ -151,7 +151,7 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
 
         // keep a reference to our callbacks object
-        BurpExtension.callbacks = callbacks;
+        FlowExtension.callbacks = callbacks;
         // obtain an extension helpers object
         helpers = callbacks.getHelpers();
         // set extension name
@@ -617,15 +617,15 @@ public class BurpExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowComponent.setLayout(new BoxLayout(flowComponent, BoxLayout.X_AXIS));
                 flowComponent.add(flowTab);
                 separateView = null;
-                callbacks.addSuiteTab(BurpExtension.this);
+                callbacks.addSuiteTab(FlowExtension.this);
                 // get burp frame
                 burpFrame = (JFrame) SwingUtilities.getWindowAncestor(flowTab);
                 // register ourselves as an HTTP listener
-                callbacks.registerHttpListener(BurpExtension.this);
+                callbacks.registerHttpListener(FlowExtension.this);
                 // extension state listener
-                callbacks.registerExtensionStateListener(BurpExtension.this);
+                callbacks.registerExtensionStateListener(FlowExtension.this);
                 // scope change listener
-                callbacks.registerScopeChangeListener(BurpExtension.this);
+                callbacks.registerScopeChangeListener(FlowExtension.this);
                 //
                 flowFilterSetDefaults();
                 callbacks.printOutput("Initializing extension with contents of Burp Proxy...");

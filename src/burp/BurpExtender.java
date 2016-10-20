@@ -1,7 +1,7 @@
 package burp;
 
-import hvqzao.flow.BurpExtension;
+import hvqzao.flow.FlowExtension;
 
-public class BurpExtender extends BurpExtension {
-    // see hvqzao.flow.BurpExtension
+public class BurpExtender extends FlowExtension {
+    // see hvqzao.flow.FlowExtension
 }
