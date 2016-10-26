@@ -62,7 +62,13 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
+import java.awt.Dialog;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.FocusAdapter;
+import java.awt.event.MouseListener;
+import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
+import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -146,6 +152,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private static final Color COLOR_HIGHLIGHT = new Color(255, 206, 130);
     private static final Color COLOR_DARKGRAY = new Color(240, 240, 240);
     private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
+    private ImageIcon iconHelp;
+    private boolean modalResult;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -164,9 +172,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             @Override
             public void run() {
                 // images
-                ImageIcon iconHelp = new ImageIcon(new ImageIcon(getClass().getResource("/hvqzao/flow/resources/panel_help.png")).getImage().getScaledInstance(13, 13, java.awt.Image.SCALE_SMOOTH));
+                iconHelp = new ImageIcon(new ImageIcon(getClass().getResource("/hvqzao/flow/resources/panel_help.png")).getImage().getScaledInstance(13, 13, java.awt.Image.SCALE_SMOOTH));
                 ImageIcon iconDefaults = new ImageIcon(new ImageIcon(getClass().getResource("/hvqzao/flow/resources/panel_defaults.png")).getImage().getScaledInstance(13, 13, java.awt.Image.SCALE_SMOOTH));
                 ImageIcon iconNewWindow = new ImageIcon(new ImageIcon(getClass().getResource("/hvqzao/flow/resources/newwindow.png")).getImage().getScaledInstance(13, 13, java.awt.Image.SCALE_SMOOTH));
+                ImageIcon iconCheckbox = new ImageIcon(new ImageIcon(getClass().getResource("/hvqzao/flow/resources/checkbox.png")).getImage().getScaledInstance(13, 13, java.awt.Image.SCALE_SMOOTH));
                 Dimension iconDimension = new Dimension(24, 24);
 
                 // flow tab prolog: vertical split
@@ -477,10 +486,17 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 // filter help
                 JPanel flowFilterHelpPane = new JPanel();
                 flowFilterHelpPane.setBorder(BorderFactory.createEmptyBorder(-4, 4, 0, 0));
-                flowFilterHelpPane.setPreferredSize(new Dimension(26, 24));
+                flowFilterHelpPane.setPreferredSize(new Dimension(26 + 10 + 26, 24));
+                //
+                JButton flowFilterHelpOpt = new JButton(iconCheckbox);
+                flowFilterHelpOpt.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+                flowFilterHelpOpt.setPreferredSize(iconDimension);
+                flowFilterHelpOpt.setMaximumSize(iconDimension);
+                callbacks.customizeUiComponent(flowFilterHelpOpt);
+                flowFilterHelpPane.add(flowFilterHelpOpt);
                 // final JButton flowFilterHelpExt = new JButton(iconHelp);
                 flowFilterHelpExt = new JButton(iconNewWindow);
-                flowFilterHelpExt.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+                flowFilterHelpExt.setBorder(BorderFactory.createEmptyBorder(-4, 0, 0, 0));
                 flowFilterHelpExt.setPreferredSize(iconDimension);
                 flowFilterHelpExt.setMaximumSize(iconDimension);
                 flowFilterHelpExt.setToolTipText(version);
@@ -620,6 +636,14 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 callbacks.addSuiteTab(FlowExtension.this);
                 // get burp frame
                 burpFrame = (JFrame) SwingUtilities.getWindowAncestor(flowTab);
+                //
+                flowFilterHelpOpt.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        showOptionsDialog();
+                    }
+                });
+
                 // register ourselves as an HTTP listener
                 callbacks.registerHttpListener(FlowExtension.this);
                 // extension state listener
@@ -744,6 +768,47 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     //
     // TODO misc
     //
+    boolean showOptionsDialog() {
+        final JDialog dialog = new JDialog(burpFrame, "Flow Extension Options", Dialog.ModalityType.DOCUMENT_MODAL);
+        DialogWrapper wrapper = new DialogWrapper();
+        FlowFilterOptions editPane = new FlowFilterOptions();
+        // customize edit pane
+        JButton editHelp = editPane.getOptionsHelp();
+        editHelp.setIcon(iconHelp);
+        editHelp.setEnabled(false);
+        callbacks.customizeUiComponent(editHelp);
+        //
+        // wrap editPane
+        wrapper.getScrollPane().getViewport().add(editPane);
+        dialog.setBounds(100, 100, 470, 470);
+        dialog.setContentPane(wrapper);
+        //
+        modalResult = false;
+        //
+        JButton ok = wrapper.getOkButton();
+        callbacks.customizeUiComponent(ok);
+        ok.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                modalResult = true;
+
+                dialog.dispose();
+            }
+        });
+        JButton cancel = wrapper.getCancelButton();
+        callbacks.customizeUiComponent(cancel);
+        cancel.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                dialog.dispose();
+            }
+        });
+        dialog.setLocationRelativeTo(flowTab);
+        dialog.setVisible(true);
+        //
+        return modalResult;
+    }
+
     static Color cellBackground(int row, boolean isSelected) {
         if (isSelected) {
             return COLOR_HIGHLIGHT;
