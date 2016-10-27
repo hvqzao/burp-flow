@@ -154,6 +154,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
     private ImageIcon iconHelp;
     private boolean modalResult;
+    private JScrollPane flowTableScroll;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -585,7 +586,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     column.setPreferredWidth(flowTableModel.getPreferredWidth(i));
                 }
                 callbacks.customizeUiComponent(flowTable);
-                JScrollPane flowTableScroll = new JScrollPane(flowTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+                flowTableScroll = new JScrollPane(flowTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 flowTableScroll.setMinimumSize(new Dimension(40, 40));
                 callbacks.customizeUiComponent(flowTableScroll);
                 flowTable.setDefaultRenderer(Boolean.class, new BooleanTableCellRenderer());
@@ -771,7 +772,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     boolean showOptionsDialog() {
         final JDialog dialog = new JDialog(burpFrame, "Flow Extension Options", Dialog.ModalityType.DOCUMENT_MODAL);
         DialogWrapper wrapper = new DialogWrapper();
-        FlowFilterOptions editPane = new FlowFilterOptions();
+        FlowFilterOptions editPane = new FlowFilterOptions(callbacks);
         // customize edit pane
         JButton editHelp = editPane.getOptionsHelp();
         editHelp.setIcon(iconHelp);
@@ -780,7 +781,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //
         // wrap editPane
         wrapper.getScrollPane().getViewport().add(editPane);
-        dialog.setBounds(100, 100, 470, 470);
+        dialog.setBounds(100, 100, 506, 320);
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
@@ -803,7 +804,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 dialog.dispose();
             }
         });
-        dialog.setLocationRelativeTo(flowTab);
+        dialog.setLocationRelativeTo(flowTableScroll);
         dialog.setVisible(true);
         //
         return modalResult;
