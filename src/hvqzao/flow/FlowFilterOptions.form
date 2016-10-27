@@ -32,9 +32,9 @@
               <Component id="optionsHelp" min="-2" pref="24" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Component id="jRadioButton2" min="-2" max="-2" attributes="0"/>
+                  <Component id="Mode1" min="-2" max="-2" attributes="0"/>
                   <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
-                  <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+                  <Component id="Mode2" min="-2" max="-2" attributes="0"/>
                   <Group type="102" attributes="0">
                       <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                       <Group type="103" groupAlignment="0" attributes="0">
@@ -55,11 +55,11 @@
                   <Group type="102" alignment="0" attributes="0">
                       <Component id="jLabel1" min="-2" max="-2" attributes="0"/>
                       <EmptySpace type="unrelated" max="-2" attributes="0"/>
-                      <Component id="jRadioButton2" min="-2" max="-2" attributes="0"/>
+                      <Component id="Mode1" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
-              <Component id="jRadioButton1" min="-2" max="-2" attributes="0"/>
+              <Component id="Mode2" min="-2" max="-2" attributes="0"/>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
               <Component id="jLabel3" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
@@ -91,7 +91,7 @@
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b style=&apos;color:#e58900;font-size:10px&apos;&gt;Operation mode&lt;/b&gt;&lt;/html&gt;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="jRadioButton1">
+    <Component class="javax.swing.JRadioButton" name="Mode2">
       <Properties>
         <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
           <ComponentRef name="buttonGroup1"/>
@@ -105,7 +105,7 @@
         <Property name="text" type="java.lang.String" value="&lt;html&gt;&lt;b&gt;Known issue&lt;/b&gt;: If Burp &quot;Platform Authentication&quot; is in use, or &quot;Match and Replace&quot; in request is used, Flow is unable to match responses to related requests. This is caused by Burp API limitations (lack of unique identifiers in HttpRequestResponse). As a workaround I suggest to perform platform authentication / requests altering in upstream proxy.&lt;/html&gt;"/>
       </Properties>
     </Component>
-    <Component class="javax.swing.JRadioButton" name="jRadioButton2">
+    <Component class="javax.swing.JRadioButton" name="Mode1">
       <Properties>
         <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
           <ComponentRef name="buttonGroup1"/>

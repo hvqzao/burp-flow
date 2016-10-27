@@ -63,18 +63,13 @@ import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
 import java.awt.Dialog;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.FocusAdapter;
-import java.awt.event.MouseListener;
-import javax.swing.JLayeredPane;
 import javax.swing.JMenu;
-import javax.swing.JRadioButton;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.06 (2016-10-13)";
+    private final String version = "Flow v1.07 (2016-10-27)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -154,6 +149,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
     private ImageIcon iconHelp;
     private boolean modalResult;
+    private int modalMode;
+    private int mode = 0;
     private JScrollPane flowTableScroll;
 
     @Override
@@ -641,7 +638,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterHelpOpt.addActionListener(new ActionListener() {
                     @Override
                     public void actionPerformed(ActionEvent e) {
-                        showOptionsDialog();
+                        if (showOptionsDialog() && (mode != modalMode)) {
+                            mode = modalMode;
+                            callbacks.saveExtensionSetting("mode", String.valueOf(mode));
+                            flowFilterUpdate();
+                        }
                     }
                 });
 
@@ -651,6 +652,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 callbacks.registerExtensionStateListener(FlowExtension.this);
                 // scope change listener
                 callbacks.registerScopeChangeListener(FlowExtension.this);
+                //
+                if ("1".equals(callbacks.loadExtensionSetting("mode"))) {
+                    mode = 1;
+                }
                 //
                 flowFilterSetDefaults();
                 callbacks.printOutput("Initializing extension with contents of Burp Proxy...");
@@ -769,22 +774,26 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     //
     // TODO misc
     //
-    boolean showOptionsDialog() {
+    
+    private boolean showOptionsDialog() {
         final JDialog dialog = new JDialog(burpFrame, "Flow Extension Options", Dialog.ModalityType.DOCUMENT_MODAL);
         DialogWrapper wrapper = new DialogWrapper();
-        FlowFilterOptions editPane = new FlowFilterOptions(callbacks);
+        final FlowFilterOptions optionsPane = new FlowFilterOptions(callbacks);
         // customize edit pane
-        JButton editHelp = editPane.getOptionsHelp();
+        JButton editHelp = optionsPane.getOptionsHelp();
         editHelp.setIcon(iconHelp);
         editHelp.setEnabled(false);
         callbacks.customizeUiComponent(editHelp);
         //
-        // wrap editPane
-        wrapper.getScrollPane().getViewport().add(editPane);
+        // wrap optionsPane
+        wrapper.getScrollPane().getViewport().add(optionsPane);
         dialog.setBounds(100, 100, 506, 320);
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
+        if (mode == 0 && optionsPane.getMode2().isSelected()) {
+            optionsPane.getMode1().setSelected(true);
+        }
         //
         JButton ok = wrapper.getOkButton();
         callbacks.customizeUiComponent(ok);
@@ -792,7 +801,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             @Override
             public void actionPerformed(ActionEvent e) {
                 modalResult = true;
-
+                modalMode = optionsPane.getMode2().isSelected() ? 1 : 0;
                 dialog.dispose();
             }
         });
@@ -1253,16 +1262,20 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 FlowEntry flowEntry;
                 flowEntry = flow.get(entry.getIdentifier().intValue());
                 boolean result = true;
+                // mode
+                if (result && mode == 0 && flowEntry.isIncomplete()) {
+                    result = false;
+                }
                 // in-scope
-                if (flowFilterInscope.isSelected() && !callbacks.isInScope(flowEntry.url)) {
+                if (result && flowFilterInscope.isSelected() && !callbacks.isInScope(flowEntry.url)) {
                     result = false;
                 }
                 // parametrized
-                if (flowFilterParametrized.isSelected() && !flowEntry.hasParams) {
+                if (result && flowFilterParametrized.isSelected() && !flowEntry.hasParams) {
                     result = false;
                 }
                 // search
-                if (flowFilterSearchField.getText().length() != 0) {
+                if (result && flowFilterSearchField.getText().length() != 0) {
                     boolean found;
                     String text = flowFilterSearchField.getText();
                     String req = new String(flowEntry.messageInfoPersisted.getRequest());
@@ -1287,7 +1300,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     }
                 }
                 // capture
-                if (!toolFlagFilterProcessing(flowEntry.toolFlag)) {
+                if (result && !toolFlagFilterProcessing(flowEntry.toolFlag)) {
                     result = false;
                 }
                 return result;
@@ -1561,7 +1574,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private String mime;
         private final Date date;
         private String comment;
-
+        
         //public String serialize() {
         //    return "";
         //}
@@ -1621,6 +1634,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             }
             date = new Date();
             comment = "";
+        }
+        
+        public boolean isIncomplete() {
+            return incomplete != null;
         }
     }
 
