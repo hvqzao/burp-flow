@@ -1,18 +1,11 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hvqzao.flow;
 
 import burp.IBurpExtenderCallbacks;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
 
-/**
- *
- * @author nme
- */
 public class FlowFilterOptions extends javax.swing.JPanel {
 
     /**
@@ -26,10 +19,12 @@ public class FlowFilterOptions extends javax.swing.JPanel {
         initComponents();
         callbacks.customizeUiComponent(Mode2);
         callbacks.customizeUiComponent(Mode1);
+        callbacks.customizeUiComponent(autoDelete);
+        callbacks.customizeUiComponent(autoDeleteKeep);
     }
     
-    public JButton getOptionsHelp() {
-        return optionsHelp;
+    public JButton getModeHelp() {
+        return modeHelp;
     }
 
     public JRadioButton getMode1() {
@@ -38,6 +33,18 @@ public class FlowFilterOptions extends javax.swing.JPanel {
 
     public JRadioButton getMode2() {
         return Mode2;
+    }
+
+    public JButton getMiscHelp() {
+        return miscHelp;
+    }
+
+    public JCheckBox getAutoDelete() {
+        return autoDelete;
+    }
+
+    public JTextField getAutoDeleteKeep() {
+        return autoDeleteKeep;
     }
 
     /**
@@ -50,19 +57,24 @@ public class FlowFilterOptions extends javax.swing.JPanel {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
-        optionsHelp = new javax.swing.JButton();
+        modeHelp = new javax.swing.JButton();
         jLabel1 = new javax.swing.JLabel();
         Mode2 = new javax.swing.JRadioButton();
         jLabel2 = new javax.swing.JLabel();
         Mode1 = new javax.swing.JRadioButton();
         jLabel3 = new javax.swing.JLabel();
+        jSeparator1 = new javax.swing.JSeparator();
+        miscHelp = new javax.swing.JButton();
+        jLabel4 = new javax.swing.JLabel();
+        autoDelete = new javax.swing.JCheckBox();
+        autoDeleteKeep = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
-        optionsHelp.setMargin(new java.awt.Insets(0, 0, 0, 0));
-        optionsHelp.setMaximumSize(new java.awt.Dimension(24, 24));
-        optionsHelp.setMinimumSize(new java.awt.Dimension(24, 24));
-        optionsHelp.setPreferredSize(new java.awt.Dimension(24, 24));
+        modeHelp.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        modeHelp.setMaximumSize(new java.awt.Dimension(24, 24));
+        modeHelp.setMinimumSize(new java.awt.Dimension(24, 24));
+        modeHelp.setPreferredSize(new java.awt.Dimension(24, 24));
 
         jLabel1.setText("<html><b style='color:#e58900;font-size:10px'>Operation mode</b></html>");
 
@@ -77,30 +89,57 @@ public class FlowFilterOptions extends javax.swing.JPanel {
 
         jLabel3.setText("<html>This mode can be useful when troubleshooting application locking during scans</html>");
 
+        miscHelp.setMargin(new java.awt.Insets(0, 0, 0, 0));
+        miscHelp.setMaximumSize(new java.awt.Dimension(24, 24));
+        miscHelp.setMinimumSize(new java.awt.Dimension(24, 24));
+        miscHelp.setPreferredSize(new java.awt.Dimension(24, 24));
+
+        jLabel4.setText("<html><b style='color:#e58900;font-size:10px'>Miscellaneous</b></html>");
+        jLabel4.setToolTipText("");
+
+        autoDelete.setText("Automatically delete oldest requests. Keep:");
+
+        autoDeleteKeep.setText("1000");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(optionsHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(Mode1)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(Mode2)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(21, 21, 21)
+                        .addComponent(jSeparator1)
+                        .addContainerGap())
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(modeHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                            .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))))
+                            .addComponent(Mode1)
+                            .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(Mode2)
+                            .addGroup(layout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)))))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(miscHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(autoDelete)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(autoDeleteKeep, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 10, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(optionsHelp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(modeHelp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -111,6 +150,17 @@ public class FlowFilterOptions extends javax.swing.JPanel {
                 .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(miscHelp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(7, 7, 7)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(autoDelete)
+                            .addComponent(autoDeleteKeep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
@@ -119,10 +169,15 @@ public class FlowFilterOptions extends javax.swing.JPanel {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JRadioButton Mode1;
     private javax.swing.JRadioButton Mode2;
+    private javax.swing.JCheckBox autoDelete;
+    private javax.swing.JTextField autoDeleteKeep;
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JButton optionsHelp;
+    private javax.swing.JLabel jLabel4;
+    private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JButton miscHelp;
+    private javax.swing.JButton modeHelp;
     // End of variables declaration//GEN-END:variables
 }
