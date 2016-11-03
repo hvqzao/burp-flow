@@ -648,13 +648,17 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                                 callbacks.saveExtensionSetting("mode", String.valueOf(mode));
                                 flowFilterUpdate();
                             }
-                            if (autoDelete != modalAutoDelete) {
-                                autoDelete = modalAutoDelete;
-                                callbacks.saveExtensionSetting("autoDelete", autoDelete ? "1" : "0");
-                            }
                             if (autoDeleteKeep != modalAutoDeleteKeep) {
                                 autoDeleteKeep = modalAutoDeleteKeep;
                                 callbacks.saveExtensionSetting("autoDeleteKeep", String.valueOf(autoDeleteKeep));
+                            }
+                            if (autoDelete != modalAutoDelete) {
+                                autoDelete = modalAutoDelete;
+                                callbacks.saveExtensionSetting("autoDelete", autoDelete ? "1" : "0");
+                                if (autoDelete) {
+                                    triggerAutoDelete();
+                                    flowTableSorter.sort();
+                                }
                             }
                         }
                     }
@@ -681,17 +685,19 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 synchronized (flow) {
                     int row = flow.size();
                     IHttpRequestResponse[] history = callbacks.getProxyHistory();
-                    int start = 0;
-                    if (autoDelete) {
-                        start = history.length - autoDeleteKeep;
-                        if (start < 0) {
-                            start = 0;
+                    if (history.length > 0) {
+                        int start = 0;
+                        if (autoDelete) {
+                            start = history.length - autoDeleteKeep;
+                            if (start < 0) {
+                                start = 0;
+                            }
                         }
+                        for (int i = start; i < history.length; i++) {
+                            flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, history[i]));
+                        }
+                        flowTableModel.fireTableRowsInserted(row, row);
                     }
-                    for (int i = start; i < history.length; i++) {
-                        flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, history[i]));
-                    }
-                    flowTableModel.fireTableRowsInserted(row, row);
                 }
                 callbacks.printOutput("Loaded.");
                 // TODO end main
@@ -747,7 +753,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     Date outdated = new Date(System.currentTimeMillis() - 5 * 60 * 1000);
                     for (FlowEntry incomplete : FLOW_INCOMPLETE) {
                         if (flowIncompleteFound == null) {
-                            if (incomplete.toolFlag == toolFlag && incomplete.incomplete.equals(helpers.bytesToString(messageInfo.getRequest()))) {
+                            if (incomplete.toolFlag == toolFlag && incomplete.isIncomplete() && incomplete.incomplete.equals(helpers.bytesToString(messageInfo.getRequest()))) {
                                 flowIncompleteFound = incomplete;
                             }
                         }
@@ -768,12 +774,19 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             flowTable.updateResponse();
                         }
                         int row = flow.indexOf(flowIncompleteFound);
+                        //callbacks.printError(String.valueOf(row) + " " + String.valueOf(flow.size()));
                         if (mode == 0) {
-                            flowTableModel.fireTableRowsInserted(row, row);
-                            triggerAutoDelete();
-                        } else {
-                            flowTableModel.fireTableRowsUpdated(row, row);
+                            // TODO refresh tableSorter filter trigger to display it
+                            flowTableSorter.sort();
                         }
+                        //flowTableModel.fireTableDataChanged();
+                        ////callbacks.printError(String.valueOf(flow.size()) + ", " + String.valueOf(row));
+                        //flowTableModel.fireTableRowsInserted(row, row);
+                        //triggerAutoDelete();
+                        //flowTableModel.fireTableRowsUpdated(0, row);
+                        //} else {
+                        flowTableModel.fireTableRowsUpdated(row, row);
+                        //}
                         FLOW_INCOMPLETE.remove(flowIncompleteFound);
                         //
                         //flowTableModel.fireTableDataChanged();
@@ -786,9 +799,9 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         }
     }
 
-    //
-    // implement IScopeChangeListener
-    //
+//
+// implement IScopeChangeListener
+//
     @Override
     public void scopeChanged() {
         if (flowFilterInscope.isSelected()) {
@@ -830,8 +843,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 output = DEFAULT;
             }
         }
-        if (output < 100) {
-            output = 100;
+        if (output < 50) {
+            output = 50;
         }
         return output;
     }
@@ -1428,6 +1441,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         builder.append(str.substring(endOffset));
 
         return builder.toString();
+
     }
 
     //
@@ -1900,7 +1914,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             });
             add(delete);*/
- /*JMenuItem temp = new JMenuItem("temp");
+            /*JMenuItem temp = new JMenuItem("temp");
             temp.addActionListener(new ActionListener() {
 
                 @Override
