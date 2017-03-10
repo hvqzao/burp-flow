@@ -20,6 +20,9 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 ## Changelog
 
+2017-03-10 - 1.10
+- added "Reflect" column (analysis result is available in tooltip)
+
 2017-03-09 - 1.09
 - "display only requests with responses" should now work properly
 - url field is now wider by default

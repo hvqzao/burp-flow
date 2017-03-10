@@ -1,4 +1,4 @@
-// Flow Burp Extension, (c) 2015-2016 Marcin Woloszyn (@hvqzao), Released under MIT license
+// Flow Burp Extension, (c) 2015-2017 Marcin Woloszyn (@hvqzao), Released under MIT license
 package hvqzao.flow;
 
 import java.awt.BorderLayout;
@@ -63,15 +63,13 @@ import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
 import java.awt.Dialog;
-import java.util.Arrays;
-import java.util.List;
 import javax.swing.JMenu;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.09 (2017-03-09)";
+    private final String version = "Flow v1.10 (2017-03-10)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -876,7 +874,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //
         // wrap optionsPane
         wrapper.getScrollPane().getViewport().add(optionsPane);
-        dialog.setBounds(100, 100, 526, 410);
+        dialog.setBounds(100, 100, 526, 420);
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
@@ -1470,13 +1468,13 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
         @Override
         public int getColumnCount() {
-            return 12;
+            return 13;
         }
 
         @Override
         public boolean isCellEditable(int rowIndex, int columnIndex) {
             switch (columnIndex) {
-                case 11:
+                case 12:
                     return true;
                 default:
                     return false;
@@ -1496,19 +1494,21 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 //        return "Method";
                 //case 4:
                 //        return "URL";
-                case 5:
-                    return Boolean.class; // "Params"
+                //case 5:
+                //        return "Reflect";
                 case 6:
-                    return Integer.class; // "Count"
+                    return Boolean.class; // "Params"
                 case 7:
-                    return Integer.class; // "Status"
+                    return Integer.class; // "Count"
                 case 8:
+                    return Integer.class; // "Status"
+                case 9:
                     return Integer.class; // "Length"
-                //case 9:
+                //case 10:
                 //        return "MIME";
-                case 10:
+                case 11:
                     return Date.class; // "Date"
-                //case 11:
+                //case 12:
                 //        return "Comment";
                 default:
                     return String.class;
@@ -1538,8 +1538,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 case 9:
                     return 55;
                 case 10:
-                    return 130;
+                    return 55;
                 case 11:
+                    return 130;
+                case 12:
                     return 160;
                 default:
                     return 20;
@@ -1561,18 +1563,20 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 case 4:
                     return "URL";
                 case 5:
-                    return "Params";
+                    return "Reflect";
                 case 6:
-                    return "Count";
+                    return "Params";
                 case 7:
-                    return "Status";
+                    return "Count";
                 case 8:
-                    return "Length";
+                    return "Status";
                 case 9:
-                    return "MIME";
+                    return "Length";
                 case 10:
-                    return "Time";
+                    return "MIME";
                 case 11:
+                    return "Time";
+                case 12:
                     return "Comment";
                 default:
                     return "";
@@ -1594,26 +1598,28 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 case 4:
                     return flowEntry.getQueryPath(); //url.getPath();
                 case 5:
-                    return flowEntry.hasParams;
+                    return new String(new char[flowEntry.getReflections().size()]).replace("\0", "|");
                 case 6:
-                    return flowEntry.paramCount;
+                    return flowEntry.hasParams;
                 case 7:
+                    return flowEntry.paramCount;
+                case 8:
                     if (flowEntry.status != -1) {
                         return flowEntry.status;
                     } else {
                         return "";
                     }
-                case 8:
+                case 9:
                     if (flowEntry.length != -1) {
                         return flowEntry.length;
                     } else {
                         return "";
                     }
-                case 9:
-                    return flowEntry.mime;
                 case 10:
-                    return new SimpleDateFormat("HH:mm:ss d MMM yyyy").format(flowEntry.date);
+                    return flowEntry.mime;
                 case 11:
+                    return new SimpleDateFormat("HH:mm:ss d MMM yyyy").format(flowEntry.date);
+                case 12:
                     return flowEntry.comment;
                 default:
                     return "";
@@ -1671,6 +1677,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private final Date date;
         private String comment;
         private final String queryPath;
+        private final ArrayList<IParameter> reflections;
 
         //public String serialize() {
         //    return "";
@@ -1694,6 +1701,15 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             status = responseInfo.getStatusCode();
             length = messageInfoPersisted.getResponse().length - responseInfo.getBodyOffset();
             mime = responseInfo.getStatedMimeType();
+            
+            IRequestInfo requestInfo = helpers.analyzeRequest(messageInfoPersisted);
+            String responseBody = helpers.bytesToString(response).substring(responseInfo.getBodyOffset());
+            for (IParameter requestParam: requestInfo.getParameters()) {
+                String value = requestParam.getValue();
+                if (value.length() > 3 && responseBody.contains(value)) {
+                    reflections.add(requestParam);
+                }
+            }
         }
 
         FlowEntry(int toolFlag, IHttpRequestResponse messageInfo) {
@@ -1706,6 +1722,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             requestInfo = helpers.analyzeRequest(messageInfo);
             method = requestInfo.getMethod();
             url = requestInfo.getUrl();
+            reflections = new ArrayList<>();
             {
                 StringBuilder pathBuilder = new StringBuilder(url.getPath());
                 String query = url.getQuery();
@@ -1754,6 +1771,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             return queryPath;
         }
 
+        public ArrayList<IParameter> getReflections() {
+            return reflections;
+        }
+        
     }
 
     //
@@ -2020,10 +2041,21 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
             c.setBackground(cellBackground(table.getRowCount() - row, isSelected));
 
+            final ArrayList<String> reflections = new ArrayList<>();
+            for (IParameter reflection: entry.getReflections()) {
+                reflections.add(new StringBuilder(" &nbsp; &nbsp;").append(reflection.getName()).append("=").append(reflection.getValue()).toString());
+            }
+            if (reflections.size() > 0) {
+                ((JLabel)c ).setToolTipText(new StringBuilder("<html>Reflections:<br/>").append(String.join("<br/>", reflections)).append("</html>").toString());
+            } else {
+                ((JLabel)c ).setToolTipText(null);
+            }
+            
             return c;
         }
     }
 
+    
     //
     // SeparateView
     //
