@@ -6,16 +6,16 @@ import javax.swing.JCheckBox;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
-public class FlowFilterOptions extends javax.swing.JPanel {
+public class FlowFilterPane extends javax.swing.JPanel {
 
     /**
      * Creates new form FlowFilterOptions
      */
-    public FlowFilterOptions() {
+    public FlowFilterPane() {
         initComponents();
     }
 
-    public FlowFilterOptions(IBurpExtenderCallbacks callbacks) {
+    public FlowFilterPane(IBurpExtenderCallbacks callbacks) {
         initComponents();
         callbacks.customizeUiComponent(Mode2);
         callbacks.customizeUiComponent(Mode1);
