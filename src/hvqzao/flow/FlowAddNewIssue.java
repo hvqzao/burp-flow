@@ -1,23 +1,23 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package hvqzao.flow;
 
 import burp.IBurpExtenderCallbacks;
 import burp.IHttpRequestResponse;
 import burp.IHttpService;
 import burp.IScanIssue;
+import java.awt.Component;
+import java.awt.KeyboardFocusManager;
+import java.awt.event.ActionEvent;
 import java.net.URL;
+import java.util.Arrays;
+import java.util.HashSet;
 import javax.swing.JButton;
 
 import java.util.Random;
+import java.util.Set;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
+import javax.swing.KeyStroke;
 
-/**
- *
- * @author tm53vu
- */
 public class FlowAddNewIssue extends javax.swing.JPanel {
 
     private final Random rand;
@@ -35,10 +35,19 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
         callbacks.customizeUiComponent(severityCombo);
         callbacks.customizeUiComponent(confidenceCombo);
         callbacks.customizeUiComponent(nameField);
-        callbacks.customizeUiComponent(issueBackgroundArea);
         callbacks.customizeUiComponent(issueDetailArea);
-        callbacks.customizeUiComponent(remediationBackgroundArea);
+        issueDetailArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERS‌​AL_KEYS, null);
+        issueDetailArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERS‌​AL_KEYS, null);
         callbacks.customizeUiComponent(remediationDetailArea);
+        remediationDetailArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERS‌​AL_KEYS, null);
+        remediationDetailArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERS‌​AL_KEYS, null);
+        callbacks.customizeUiComponent(issueBackgroundArea);
+        issueBackgroundArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERS‌​AL_KEYS, null);
+        issueBackgroundArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERS‌​AL_KEYS, null);
+        callbacks.customizeUiComponent(remediationBackgroundArea);
+        remediationBackgroundArea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERS‌​AL_KEYS, null);
+        remediationBackgroundArea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERS‌​AL_KEYS, null);
+
     }
 
     public JButton getHelpButton() {
@@ -150,7 +159,8 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
 
         severityCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "High", "Medium", "Low", "Informational" }));
 
-        jLabel1.setText("<html><b style='color:#e58900;font-size:10px'>Add new issue</b></html>");
+        jLabel1.setText("<html><b style='color:#e58900;font-size:10px'>Add new sitemap issue</b></html>");
+        jLabel1.setToolTipText("");
 
         jLabel2.setText("This form allows adding new, custom finding.");
 
@@ -166,10 +176,12 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
 
         issueBackgroundArea.setColumns(20);
         issueBackgroundArea.setRows(5);
+        issueBackgroundArea.setText("...");
         jScrollPane1.setViewportView(issueBackgroundArea);
 
         remediationBackgroundArea.setColumns(20);
         remediationBackgroundArea.setRows(5);
+        remediationBackgroundArea.setText("...");
         jScrollPane2.setViewportView(remediationBackgroundArea);
 
         jLabel7.setText("Remediation background:");
@@ -178,12 +190,14 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
 
         issueDetailArea.setColumns(20);
         issueDetailArea.setRows(5);
+        issueDetailArea.setText("...");
         jScrollPane3.setViewportView(issueDetailArea);
 
         jLabel9.setText("Remediation detail:");
 
         remediationDetailArea.setColumns(20);
         remediationDetailArea.setRows(5);
+        remediationDetailArea.setText("...");
         jScrollPane4.setViewportView(remediationDetailArea);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
@@ -292,4 +306,21 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
     private javax.swing.JTextArea remediationDetailArea;
     private javax.swing.JComboBox<String> severityCombo;
     // End of variables declaration//GEN-END:variables
+
+    public static class TransferFocus {
+
+        /**
+         * Patch the behaviour of a component. TAB transfers focus to the next
+         * focusable component, SHIFT+TAB transfers focus to the previous
+         * focusable component.
+         *
+         * @param c The component to be patched.
+         */
+        public static void patch(Component c) {
+            Set<KeyStroke> strokes = new HashSet<KeyStroke>(Arrays.asList(KeyStroke.getKeyStroke("pressed TAB")));
+            c.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, strokes);
+            strokes = new HashSet<KeyStroke>(Arrays.asList(KeyStroke.getKeyStroke("shift pressed TAB")));
+            c.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, strokes);
+        }
+    }
 }

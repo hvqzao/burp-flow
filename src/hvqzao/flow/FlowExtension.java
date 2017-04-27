@@ -70,7 +70,7 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.11 (2017-04-06)";
+    private final String version = "Flow v1.12 (2017-04-27)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -858,7 +858,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     }
 
     private boolean showAddNewIssueDialog() {
-        final JDialog dialog = new JDialog(burpFrame, "Add New Issue", Dialog.ModalityType.DOCUMENT_MODAL);
+        final JDialog dialog = new JDialog(burpFrame, "Add New Sitemap Issue", Dialog.ModalityType.DOCUMENT_MODAL);
         DialogWrapper wrapper = new DialogWrapper();
         final FlowAddNewIssue addNewIssue = new FlowAddNewIssue(callbacks);
         // customize options pane
@@ -1761,9 +1761,14 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             IRequestInfo requestInfo = helpers.analyzeRequest(messageInfoPersisted);
             String responseBody = helpers.bytesToString(response).substring(responseInfo.getBodyOffset());
             for (IParameter requestParam : requestInfo.getParameters()) {
-                String value = requestParam.getValue();
-                if (value.length() > 3 && responseBody.contains(value)) {
-                    reflections.add(requestParam);
+                // exclude cookies
+                if (requestParam.getType() != IParameter.PARAM_COOKIE) {
+                    // parameter value has at least 3 chars
+                    String value = requestParam.getValue();
+                    // reflected in response?
+                    if (value.length() > 3 && responseBody.contains(value)) {
+                        reflections.add(requestParam);
+                    }
                 }
             }
         }
@@ -2019,7 +2024,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             history.add(clearAll);
 
             add(new Separator());
-            JMenuItem addNewIssue = new JMenuItem("Add new issue");
+            JMenuItem addNewIssue = new JMenuItem("Add new sitemap issue");
             addNewIssue.setEnabled(burpFree == false);
             addNewIssue.addActionListener(new ActionListener() {
 
@@ -2078,6 +2083,36 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         }
     }
 
+    private String paramType(byte type) {
+        String result;
+        switch (type) {
+            case IParameter.PARAM_BODY:
+                result = "BODY";
+                break;
+            case IParameter.PARAM_COOKIE:
+                result = "COOKIE";
+                break;
+            case IParameter.PARAM_JSON:
+                result = "JSON";
+                break;
+            case IParameter.PARAM_MULTIPART_ATTR:
+                result = "MULTIPART_ATTR";
+                break;
+            case IParameter.PARAM_URL:
+                result = "URL";
+                break;
+            case IParameter.PARAM_XML:
+                result = "XML";
+                break;
+            case IParameter.PARAM_XML_ATTR:
+                result = "XML_ATTR";
+                break;
+            default:
+                result = Byte.toString(type);
+        }
+        return result;
+    }
+    
     class FlowTableCellRenderer extends DefaultTableCellRenderer {
 
         @Override
@@ -2126,7 +2161,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
             final ArrayList<String> reflections = new ArrayList<>();
             for (IParameter reflection : entry.getReflections()) {
-                reflections.add(new StringBuilder(" &nbsp; &nbsp;").append(reflection.getName()).append("=").append(reflection.getValue()).toString());
+                reflections.add(new StringBuilder(" &nbsp; &nbsp; (").append(paramType(reflection.getType())).append(") ").append(reflection.getName()).append("=").append(reflection.getValue()).toString());
             }
             if (reflections.size() > 0) {
                 ((JLabel) c).setToolTipText(new StringBuilder("<html>Reflections:<br/>").append(String.join("<br/>", reflections)).append("</html>").toString());
