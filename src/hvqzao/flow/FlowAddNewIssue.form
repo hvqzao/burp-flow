@@ -146,7 +146,7 @@
             <StringItem index="0" value="High"/>
             <StringItem index="1" value="Medium"/>
             <StringItem index="2" value="Low"/>
-            <StringItem index="3" value="Informational"/>
+            <StringItem index="3" value="Information"/>
           </StringArray>
         </Property>
       </Properties>

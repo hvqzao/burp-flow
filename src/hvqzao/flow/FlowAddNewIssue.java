@@ -6,7 +6,6 @@ import burp.IHttpService;
 import burp.IScanIssue;
 import java.awt.Component;
 import java.awt.KeyboardFocusManager;
-import java.awt.event.ActionEvent;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -14,8 +13,6 @@ import javax.swing.JButton;
 
 import java.util.Random;
 import java.util.Set;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.KeyStroke;
 
 public class FlowAddNewIssue extends javax.swing.JPanel {
@@ -157,7 +154,7 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
         helpButton.setMinimumSize(new java.awt.Dimension(24, 24));
         helpButton.setPreferredSize(new java.awt.Dimension(24, 24));
 
-        severityCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "High", "Medium", "Low", "Informational" }));
+        severityCombo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "High", "Medium", "Low", "Information" }));
 
         jLabel1.setText("<html><b style='color:#e58900;font-size:10px'>Add new sitemap issue</b></html>");
         jLabel1.setToolTipText("");
@@ -317,9 +314,9 @@ public class FlowAddNewIssue extends javax.swing.JPanel {
          * @param c The component to be patched.
          */
         public static void patch(Component c) {
-            Set<KeyStroke> strokes = new HashSet<KeyStroke>(Arrays.asList(KeyStroke.getKeyStroke("pressed TAB")));
+            Set<KeyStroke> strokes = new HashSet<>(Arrays.asList(KeyStroke.getKeyStroke("pressed TAB")));
             c.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS, strokes);
-            strokes = new HashSet<KeyStroke>(Arrays.asList(KeyStroke.getKeyStroke("shift pressed TAB")));
+            strokes = new HashSet<>(Arrays.asList(KeyStroke.getKeyStroke("shift pressed TAB")));
             c.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS, strokes);
         }
     }
