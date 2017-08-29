@@ -70,7 +70,7 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.13 (2017-05-19)";
+    private final String version = "Flow v1.13 (2017-08-29)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -155,7 +155,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private JScrollPane flowTableScroll;
     private boolean autoDelete = false;
     private int autoDeleteKeep = 1000;
-    private boolean autoPopulate = true;
+    private boolean autoPopulate = false;
     private boolean modalAutoPopulate;
     private boolean modalAutoDelete;
     private int modalAutoDeleteKeep;
@@ -652,7 +652,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             }
                             if (autoPopulate != modalAutoPopulate) {
                                 autoPopulate = modalAutoPopulate;
-                                callbacks.saveExtensionSetting("autoPopulate", autoPopulate ? "1" : "0");
+                                callbacks.saveExtensionSetting("autoPopulateProxy", autoPopulate ? "1" : "0");
                             }
                             if (autoDeleteKeep != modalAutoDeleteKeep) {
                                 autoDeleteKeep = modalAutoDeleteKeep;
@@ -681,7 +681,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     mode = 1;
                 }
                 //
-                autoPopulate = "0".equals(callbacks.loadExtensionSetting("autoPopulate")) == false; // will default to true if not set
+                //autoPopulate = "0".equals(callbacks.loadExtensionSetting("autoPopulate")) == false; // will default to true if not set
+                autoPopulate = "1".equals(callbacks.loadExtensionSetting("autoPopulateProxy"));
                 autoDeleteKeep = validateAutoDeleteKeep(callbacks.loadExtensionSetting("autoDeleteKeep"));
                 autoDelete = "1".equals(callbacks.loadExtensionSetting("autoDelete"));
                 //
