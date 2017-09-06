@@ -64,13 +64,15 @@ import burp.IScopeChangeListener;
 import burp.ITab;
 import java.awt.Dialog;
 import java.io.PrintWriter;
+import java.util.List;
 import javax.swing.JMenu;
+import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.13 (2017-08-29)";
+    private final String version = "Flow v1.14 (2017-09-06)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -692,23 +694,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 callbacks.printOutput(version);
                 if (autoPopulate) {
                     //callbacks.printOutput("Initializing extension with contents of Burp Proxy...");
-                    synchronized (flow) {
-                        int row = flow.size();
-                        IHttpRequestResponse[] history = callbacks.getProxyHistory();
-                        if (history.length > 0) {
-                            int start = 0;
-                            if (autoDelete) {
-                                start = history.length - autoDeleteKeep;
-                                if (start < 0) {
-                                    start = 0;
-                                }
-                            }
-                            for (int i = start; i < history.length; i++) {
-                                flow.add(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, history[i]));
-                            }
-                            flowTableModel.fireTableRowsInserted(row, row);
-                        }
-                    }
+                    (new PopulateWorker(callbacks.getProxyHistory())).execute();
                 }
                 //callbacks.printOutput("Loaded.");
                 // TODO end main
@@ -825,6 +811,50 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     public void extensionUnloaded() {
         while (!dialogs.isEmpty()) {
             dialogs.get(0).dispose();
+        }
+    }
+
+    /**
+     * Flow table populating SwingWorker.
+     *
+     */
+    class PopulateWorker extends SwingWorker<Object, FlowEntry> {
+
+        private final IHttpRequestResponse[] history;
+
+        public PopulateWorker(IHttpRequestResponse[] history) {
+            this.history = history;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            if (history.length > 0) {
+                int start = 0;
+                if (autoDelete) {
+                    start = history.length - autoDeleteKeep;
+                    if (start < 0) {
+                        start = 0;
+                    }
+                }
+                for (int i = start; i < history.length; i++) {
+                    publish(new FlowEntry(IBurpExtenderCallbacks.TOOL_PROXY, history[i]));
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void process(List<FlowEntry> chunks) {
+            synchronized (flow) {
+                int from = flow.size();
+                flow.addAll(chunks);
+                int to = flow.size();
+                try {
+                    flowTableModel.fireTableRowsInserted(from, to - 1);
+                } catch (Exception ex) {
+                    ex.printStackTrace(stderr);
+                }
+            }
         }
     }
 
@@ -1797,7 +1827,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             byte[] response = messageInfo.getResponse();
             if (response == null) {
                 incomplete = helpers.bytesToString(messageInfo.getRequest());
-                FLOW_INCOMPLETE.add(this);
+                FLOW_INCOMPLETE.add(FlowEntry.this);
             }
             boolean hasGetParams = url.getQuery() != null;
             boolean hasPostParams = messageInfoPersisted.getRequest().length - requestInfo.getBodyOffset() > 0;
@@ -2113,7 +2143,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         }
         return result;
     }
-    
+
     class FlowTableCellRenderer extends DefaultTableCellRenderer {
 
         @Override
