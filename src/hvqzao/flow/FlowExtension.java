@@ -72,7 +72,7 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.14 (2017-09-06)";
+    private final String version = "Flow v1.15 (2017-09-07)";
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -162,6 +162,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private boolean modalAutoDelete;
     private int modalAutoDeleteKeep;
     private PrintWriter stderr;
+    private FilterWorker flowFilterWorker;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -238,63 +239,34 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 final JDialog flowFilterPopupWindow = new JDialog();
                 FlowFilterPopup flowFilterPopup = new FlowFilterPopup();
                 flowFilterCaptureSourceExtender = flowFilterPopup.getFlowFilterCaptureSourceExtender();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceExtender);
                 flowFilterCaptureSourceExtenderOnly = flowFilterPopup.getFlowFilterCaptureSourceExtenderOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceExtenderOnly);
                 flowFilterCaptureSourceIntruder = flowFilterPopup.getFlowFilterCaptureSourceIntruder();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruder);
                 flowFilterCaptureSourceIntruderOnly = flowFilterPopup.getFlowFilterCaptureSourceIntruderOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceIntruderOnly);
                 flowFilterCaptureSourceProxy = flowFilterPopup.getFlowFilterCaptureSourceProxy();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceProxy);
                 flowFilterCaptureSourceProxyOnly = flowFilterPopup.getFlowFilterCaptureSourceProxyOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceProxyOnly);
                 flowFilterCaptureSourceRepeater = flowFilterPopup.getFlowFilterCaptureSourceRepeater();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeater);
                 flowFilterCaptureSourceRepeaterOnly = flowFilterPopup.getFlowFilterCaptureSourceRepeaterOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceRepeaterOnly);
                 flowFilterCaptureSourceScanner = flowFilterPopup.getFlowFilterCaptureSourceScanner();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceScanner);
                 flowFilterCaptureSourceScannerOnly = flowFilterPopup.getFlowFilterCaptureSourceScannerOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceScannerOnly);
                 flowFilterCaptureSourceSpider = flowFilterPopup.getFlowFilterCaptureSourceSpider();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceSpider);
                 flowFilterCaptureSourceSpiderOnly = flowFilterPopup.getFlowFilterCaptureSourceSpiderOnly();
-                callbacks.customizeUiComponent(flowFilterCaptureSourceSpiderOnly);
                 flowFilterInscope = flowFilterPopup.getFlowFilterInscope();
-                callbacks.customizeUiComponent(flowFilterInscope);
                 flowFilterParametrized = flowFilterPopup.getFlowFilterParametrized();
-                callbacks.customizeUiComponent(flowFilterParametrized);
                 flowFilterSearchCaseSensitive = flowFilterPopup.getFlowFilterSearchCaseSensitive();
-                callbacks.customizeUiComponent(flowFilterSearchCaseSensitive);
                 flowFilterSearchField = flowFilterPopup.getFlowFilterSearchField();
-                callbacks.customizeUiComponent(flowFilterSearchField);
                 flowFilterSearchNegative = flowFilterPopup.getFlowFilterSearchNegative();
-                callbacks.customizeUiComponent(flowFilterSearchNegative);
                 flowFilterSourceExtender = flowFilterPopup.getFlowFilterSourceExtender();
-                callbacks.customizeUiComponent(flowFilterSourceExtender);
                 flowFilterSourceExtenderOnly = flowFilterPopup.getFlowFilterSourceExtenderOnly();
-                callbacks.customizeUiComponent(flowFilterSourceExtenderOnly);
                 flowFilterSourceIntruder = flowFilterPopup.getFlowFilterSourceIntruder();
-                callbacks.customizeUiComponent(flowFilterSourceIntruder);
                 flowFilterSourceIntruderOnly = flowFilterPopup.getFlowFilterSourceIntruderOnly();
-                callbacks.customizeUiComponent(flowFilterSourceIntruderOnly);
                 flowFilterSourceProxy = flowFilterPopup.getFlowFilterSourceProxy();
-                callbacks.customizeUiComponent(flowFilterSourceProxy);
                 flowFilterSourceProxyOnly = flowFilterPopup.getFlowFilterSourceProxyOnly();
-                callbacks.customizeUiComponent(flowFilterSourceProxyOnly);
                 flowFilterSourceRepeater = flowFilterPopup.getFlowFilterSourceRepeater();
-                callbacks.customizeUiComponent(flowFilterSourceRepeater);
                 flowFilterSourceRepeaterOnly = flowFilterPopup.getFlowFilterSourceRepeaterOnly();
-                callbacks.customizeUiComponent(flowFilterSourceRepeaterOnly);
                 flowFilterSourceScanner = flowFilterPopup.getFlowFilterSourceScanner();
-                callbacks.customizeUiComponent(flowFilterSourceScanner);
                 flowFilterSourceScannerOnly = flowFilterPopup.getFlowFilterSourceScannerOnly();
-                callbacks.customizeUiComponent(flowFilterSourceScannerOnly);
                 flowFilterSourceSpider = flowFilterPopup.getFlowFilterSourceSpider();
-                callbacks.customizeUiComponent(flowFilterSourceSpider);
                 flowFilterSourceSpiderOnly = flowFilterPopup.getFlowFilterSourceSpiderOnly();
-                callbacks.customizeUiComponent(flowFilterSourceSpiderOnly);
                 flowFilterBottom = flowFilterPopup.getFlowFilterBottom();
 
                 flowFilterSourceProxyOnlyOrig = true;
@@ -511,55 +483,53 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterHelpPane.add(flowFilterHelpExt);
                 flowFilterPane.add(flowFilterHelpPane, BorderLayout.LINE_END);
                 flowTablePane.add(flowFilterPane, BorderLayout.PAGE_START);
-                // flow filterHelpExt popup
-                /*
-                final JDialog flowFilterHelpExtPopupWindow = new JDialog();
-                final JLabel flowFilterHelpExtPopup = new JLabel(version);
-                // flowFilterHelpExtPopup.setBorder(BorderFactory.createLineBorder(Color.darkGray));
-                // flowFilterHelpExtPopup.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), BorderFactory.createEmptyBorder(10, 20, 10, 20)));
-                flowFilterHelpExtPopup.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), BorderFactory.createEmptyBorder(2, 20, 2, 20)));
-                flowFilterHelpExtPopup.setBackground(Color.lightGray);
+                //// flow filterHelpExt popup
+                //final JDialog flowFilterHelpExtPopupWindow = new JDialog();
+                //final JLabel flowFilterHelpExtPopup = new JLabel(version);
+                //// flowFilterHelpExtPopup.setBorder(BorderFactory.createLineBorder(Color.darkGray));
+                //// flowFilterHelpExtPopup.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), BorderFactory.createEmptyBorder(10, 20, 10, 20)));
+                //flowFilterHelpExtPopup.setBorder(BorderFactory.createCompoundBorder(BorderFactory.createLineBorder(Color.darkGray), BorderFactory.createEmptyBorder(2, 20, 2, 20)));
+                //flowFilterHelpExtPopup.setBackground(Color.lightGray);
+                ////
+                //flowFilterHelpExtPopupReady = true;
+                //flowFilterHelpExt.addMouseListener(new MouseAdapter() {
+                //    public void mousePressed(MouseEvent e) {
+                //        if (flowFilterHelpExtPopupReady) {
+                //            flowFilterHelpExtPopupReady = false;
+                //            flowFilterHelpExtPopupWindow.addWindowFocusListener(new WindowFocusListener() {
                 //
-                flowFilterHelpExtPopupReady = true;
-                flowFilterHelpExt.addMouseListener(new MouseAdapter() {
-                    public void mousePressed(MouseEvent e) {
-                        if (flowFilterHelpExtPopupReady) {
-                            flowFilterHelpExtPopupReady = false;
-                            flowFilterHelpExtPopupWindow.addWindowFocusListener(new WindowFocusListener() {
-
-                                @Override
-                                public void windowLostFocus(WindowEvent e) {
-                                    flowFilterHelpExtPopupWindow.dispose();
-                                    SwingUtilities.invokeLater(new Runnable() {
-
-                                        @Override
-                                        public void run() {
-                                            flowFilterHelpExtPopupReady = true;
-                                        }
-                                    });
-                                }
-
-                                @Override
-                                public void windowGainedFocus(WindowEvent e) {
-                                }
-
-                            });
-                            flowFilterHelpExtPopupWindow.setUndecorated(true);
-                            flowFilterHelpExtPopupWindow.add(flowFilterHelpExtPopup);
-                            flowFilterHelpExtPopupWindow.pack();
-                            // dialog.setLocationRelativeTo(null);
-                            Point flowFilterHelpExtPT = flowFilterHelpExt.getLocationOnScreen();
-                            int x = (int) flowFilterHelpExtPT.getX() - 2 - flowFilterHelpExtPopup.getWidth() + 2; // - 7;
-                            if (x < 0) {
-                                x = 0;
-                            }
-                            flowFilterHelpExtPopupWindow.setLocation(new Point(x, flowFilterHelpExtPT.y + 2)); // + 1
-                            // ....requestFocus();
-                            flowFilterHelpExtPopupWindow.setVisible(true);
-                        }
-                    }
-                });
-                 */
+                //                @Override
+                //                public void windowLostFocus(WindowEvent e) {
+                //                    flowFilterHelpExtPopupWindow.dispose();
+                //                    SwingUtilities.invokeLater(new Runnable() {
+                //
+                //                        @Override
+                //                        public void run() {
+                //                            flowFilterHelpExtPopupReady = true;
+                //                        }
+                //                    });
+                //                }
+                //
+                //                @Override
+                //                public void windowGainedFocus(WindowEvent e) {
+                //                }
+                //
+                //            });
+                //            flowFilterHelpExtPopupWindow.setUndecorated(true);
+                //            flowFilterHelpExtPopupWindow.add(flowFilterHelpExtPopup);
+                //            flowFilterHelpExtPopupWindow.pack();
+                //            // dialog.setLocationRelativeTo(null);
+                //            Point flowFilterHelpExtPT = flowFilterHelpExt.getLocationOnScreen();
+                //            int x = (int) flowFilterHelpExtPT.getX() - 2 - flowFilterHelpExtPopup.getWidth() + 2; // - 7;
+                //            if (x < 0) {
+                //                x = 0;
+                //            }
+                //            flowFilterHelpExtPopupWindow.setLocation(new Point(x, flowFilterHelpExtPT.y + 2)); // + 1
+                //            // ....requestFocus();
+                //            flowFilterHelpExtPopupWindow.setVisible(true);
+                //        }
+                //    }
+                //});
                 flowFilterHelpExt.addMouseListener(new MouseAdapter() {
 
                     @Override
@@ -731,8 +701,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                         flowTableModel.fireTableRowsInserted(row, row);
                         triggerAutoDelete();
                     }
-                    // stdout.println("[+] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()));
-                    // stdout.println("    " + String.valueOf(flowIncomplete.size()));
+                    //stdout.println("[+] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()));
+                    //stdout.println("    " + String.valueOf(flowIncomplete.size()));
                 } else {
                     // only requests with responses
                     if (mode == 0) {
@@ -785,8 +755,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             //
                             //flowTableModel.fireTableDataChanged();
                         }
-                        // stdout.println("[-] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()) + " [" + String.valueOf(helpers.analyzeResponse(messageInfo.getResponse()).getStatusCode()) + "]");
-                        // stdout.println("    " + String.valueOf(flowIncomplete.size()) + ", match: " + String.valueOf(flowIncompleteFound != null));
+                        //stdout.println("[-] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()) + " [" + String.valueOf(helpers.analyzeResponse(messageInfo.getResponse()).getStatusCode()) + "]");
+                        //stdout.println("    " + String.valueOf(flowIncomplete.size()) + ", match: " + String.valueOf(flowIncompleteFound != null));
                         //callbacks.printOutput(String.valueOf(FLOW_INCOMPLETE.size()));
                     }
                 }
@@ -856,6 +826,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             }
         }
+    }
+
+    public static IBurpExtenderCallbacks getCallbacks() {
+        return callbacks;
     }
 
     //
@@ -1482,35 +1456,56 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         };
         mergedFilter.add(manualFilter);
         // regex filter
-        /*
-        if (flowFilterSearchField.getText().length() != 0) {
-            RowFilter<FlowTableModel, Number> regexFilter;
+        //if (flowFilterSearchField.getText().length() != 0) {
+        //    RowFilter<FlowTableModel, Number> regexFilter;
+        //    try {
+        //        if (flowFilterSearchCaseSensitive.isSelected()) {
+        //            regexFilter = RowFilter.regexFilter(flowFilterSearchField.getText());
+        //        } else {
+        //            regexFilter = RowFilter.regexFilter("(?i)" + flowFilterSearchField.getText());
+        //        }
+        //    } catch (java.util.regex.PatternSyntaxException e) {
+        //        return;
+        //    }
+        //
+        //    if (flowFilterSearchNegative.isSelected()) {
+        //        mergedFilter.add(RowFilter.notFilter(regexFilter));
+        //    } else {
+        //        mergedFilter.add(regexFilter);
+        //    }
+        //}
+        // flowTableSorter.setRowFilter(RowFilter.andFilter(mergedFilter));
+        //SwingUtilities.invokeLater(new Runnable() {
+        //
+        //    @Override
+        //    public void run() {
+        //        flowTableSorter.setRowFilter(RowFilter.andFilter(mergedFilter));
+        //    }
+        //});
+        flowFilterUpdateDescription();
+        if (flowFilterWorker != null) {
             try {
-                if (flowFilterSearchCaseSensitive.isSelected()) {
-                    regexFilter = RowFilter.regexFilter(flowFilterSearchField.getText());
-                } else {
-                    regexFilter = RowFilter.regexFilter("(?i)" + flowFilterSearchField.getText());
-                }
-            } catch (java.util.regex.PatternSyntaxException e) {
-                return;
-            }
-
-            if (flowFilterSearchNegative.isSelected()) {
-                mergedFilter.add(RowFilter.notFilter(regexFilter));
-            } else {
-                mergedFilter.add(regexFilter);
+                flowFilterWorker.cancel(true);
+            } catch (Exception ex) {
+                // do nothing
             }
         }
-         */
-        // flowTableSorter.setRowFilter(RowFilter.andFilter(mergedFilter));
-        SwingUtilities.invokeLater(new Runnable() {
+        (flowFilterWorker = new FilterWorker(RowFilter.andFilter(mergedFilter))).execute();
+    }
 
-            @Override
-            public void run() {
-                flowTableSorter.setRowFilter(RowFilter.andFilter(mergedFilter));
-            }
-        });
-        flowFilterUpdateDescription();
+    class FilterWorker extends SwingWorker<Object, Object> {
+
+        private final RowFilter<FlowTableModel, Number> filter;
+
+        public FilterWorker(RowFilter<FlowTableModel, Number> filter) {
+            this.filter = filter;
+        }
+
+        @Override
+        protected Object doInBackground() throws Exception {
+            flowTableSorter.setRowFilter(filter);
+            return null;
+        }
     }
 
     private static String abbreviateMiddle(String str, String middle, int length) {
@@ -2066,28 +2061,30 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
             });
             add(addNewIssue);
-            /*JMenuItem delete = new JMenuItem("Delete");
-            delete.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    if (popupPointedFlowEntry != null) {
-                        flowTableModel.remove(popupPointedFlowEntry);
-                        popupPointedFlowEntry = null;
-                    }
-                }
-            });
-            add(delete);*/
- /*JMenuItem temp = new JMenuItem("temp");
-            temp.addActionListener(new ActionListener() {
-
-                @Override
-                public void actionPerformed(ActionEvent e) {
-                    tempy = popupPointedFlowEntry;
-                    flowTable.repaint();
-                }
-            });
-            add(temp);*/
+            
+            //JMenuItem delete = new JMenuItem("Delete");
+            //delete.addActionListener(new ActionListener() {
+            //
+            //    @Override
+            //    public void actionPerformed(ActionEvent e) {
+            //        if (popupPointedFlowEntry != null) {
+            //            flowTableModel.remove(popupPointedFlowEntry);
+            //            popupPointedFlowEntry = null;
+            //        }
+            //    }
+            //});
+            //add(delete);
+            //
+            //JMenuItem temp = new JMenuItem("temp");
+            //temp.addActionListener(new ActionListener() {
+            //
+            //    @Override
+            //    public void actionPerformed(ActionEvent e) {
+            //        tempy = popupPointedFlowEntry;
+            //        flowTable.repaint();
+            //    }
+            //});
+            //add(temp);
             JMenuItem deleteSelected = new JMenuItem("Delete selected");
             deleteSelected.addActionListener(new ActionListener() {
 
@@ -2158,11 +2155,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             final Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
             // c.setBackground(row % 2 == 0 ? Color.LIGHT_GRAY : Color.WHITE);
-            /*if (!isSelected && tempy != null && flowTable.convertRowIndexToModel(row) == flow.indexOf(tempy)) {
-				c.setForeground(Color.blue);
-			} else {
-				c.setForeground(Color.black);
-			}*/
+            //if (!isSelected && tempy != null && flowTable.convertRowIndexToModel(row) == flow.indexOf(tempy)) {
+            //    c.setForeground(Color.blue);
+            //} else {
+            //    c.setForeground(Color.black);
+            //}
             int modelRow = table.convertRowIndexToModel(row);
             FlowEntry entry = flow.get(modelRow);
             int r = 0, g = 0, b = 0;
@@ -2225,7 +2222,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowComponent.revalidate();
                 flowComponent.repaint();
             } catch (Exception ex) {
-                //
+                // do nothing
             }
             super.dispose();
         }
@@ -2269,8 +2266,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         }
 
         @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus,
-                int row, int column) {
+        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             //int modelRow = table.convertRowIndexToModel(row);
             setBackground(cellBackground(table.getRowCount() - row, isSelected));
             if (value instanceof Boolean) {

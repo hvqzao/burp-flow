@@ -1,5 +1,6 @@
 package hvqzao.flow;
 
+import burp.IBurpExtenderCallbacks;
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -25,7 +26,37 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
 
         TitledBorder flowFilterCaptureBySourceBorder = (TitledBorder) getFlowFilterCaptureBySource().getBorder();
         flowFilterCaptureBySourceBorder.setTitleFont(flowFilterCaptureBySourceBorder.getTitleFont().deriveFont(Font.PLAIN));
-        
+
+        IBurpExtenderCallbacks callbacks = FlowExtension.getCallbacks();
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceExtender);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceExtenderOnly);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceIntruder);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceIntruderOnly);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceProxy);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceProxyOnly);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceRepeater);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceRepeaterOnly);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceScanner);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceScannerOnly);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceSpider);
+        callbacks.customizeUiComponent(FlowFilterCaptureSourceSpiderOnly);
+        callbacks.customizeUiComponent(FlowFilterInscope);
+        callbacks.customizeUiComponent(FlowFilterParametrized);
+        callbacks.customizeUiComponent(FlowFilterSearchCaseSensitive);
+        callbacks.customizeUiComponent(FlowFilterSearchField);
+        callbacks.customizeUiComponent(FlowFilterSearchNegative);
+        callbacks.customizeUiComponent(FlowFilterSourceExtender);
+        callbacks.customizeUiComponent(FlowFilterSourceExtenderOnly);
+        callbacks.customizeUiComponent(FlowFilterSourceIntruder);
+        callbacks.customizeUiComponent(FlowFilterSourceIntruderOnly);
+        callbacks.customizeUiComponent(FlowFilterSourceProxy);
+        callbacks.customizeUiComponent(FlowFilterSourceProxyOnly);
+        callbacks.customizeUiComponent(FlowFilterSourceRepeater);
+        callbacks.customizeUiComponent(FlowFilterSourceRepeaterOnly);
+        callbacks.customizeUiComponent(FlowFilterSourceScanner);
+        callbacks.customizeUiComponent(FlowFilterSourceScannerOnly);
+        callbacks.customizeUiComponent(FlowFilterSourceSpider);
+        callbacks.customizeUiComponent(FlowFilterSourceSpiderOnly);
     }
 
     public JButton getFlowFilterDefaults() {
@@ -257,7 +288,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
 
         FlowFilterInscope.getAccessibleContext().setAccessibleName("FlowFilterInscope");
 
-        FlowFilterBySearch.setBorder(javax.swing.BorderFactory.createTitledBorder("Filter by search term (regular expression)"));
+        FlowFilterBySearch.setBorder(javax.swing.BorderFactory.createTitledBorder("Filter by search term"));
 
         FlowFilterSearchCaseSensitive.setText("Case sensitive");
 
@@ -504,6 +535,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         );
 
         flowFilterDefaults.getAccessibleContext().setAccessibleDescription("");
+        FlowFilterBySearch.getAccessibleContext().setAccessibleName("Filter by search term");
         FlowFilterBySource.getAccessibleContext().setAccessibleName("Filter source");
     }// </editor-fold>//GEN-END:initComponents
 
