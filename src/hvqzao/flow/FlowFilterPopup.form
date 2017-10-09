@@ -64,13 +64,17 @@
     <DimensionLayout dim="1">
       <Group type="103" groupAlignment="0" attributes="0">
           <Group type="102" alignment="0" attributes="0">
-              <EmptySpace max="32767" attributes="0"/>
+              <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" attributes="0">
-                  <Group type="103" alignment="0" groupAlignment="0" max="-2" attributes="0">
-                      <Component id="FlowFilterCaptureBySource" max="32767" attributes="0"/>
-                      <Component id="FlowFilterBySource" max="32767" attributes="0"/>
+                  <Group type="102" alignment="0" attributes="0">
+                      <Group type="103" groupAlignment="0" max="-2" attributes="0">
+                          <Component id="FlowFilterCaptureBySource" max="32767" attributes="0"/>
+                          <Component id="FlowFilterBySource" max="32767" attributes="0"/>
+                      </Group>
+                      <EmptySpace max="32767" attributes="0"/>
+                      <Component id="FlowFilterBottom" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <Group type="102" attributes="0">
+                  <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" attributes="0">
                               <Component id="flowFilterHelp" min="-2" max="-2" attributes="0"/>
@@ -80,10 +84,7 @@
                           <Component id="FlowFilterByReqType" min="-2" max="-2" attributes="0"/>
                       </Group>
                       <EmptySpace max="-2" attributes="0"/>
-                      <Group type="103" groupAlignment="0" attributes="0">
-                          <Component id="FlowFilterBySearch" alignment="0" min="-2" max="-2" attributes="0"/>
-                          <Component id="FlowFilterBottom" alignment="0" min="-2" max="-2" attributes="0"/>
-                      </Group>
+                      <Component id="FlowFilterBySearch" min="-2" max="-2" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -182,21 +183,23 @@
           </Border>
         </Property>
       </Properties>
-      <AccessibilityProperties>
-        <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="Filter by search term"/>
-      </AccessibilityProperties>
 
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
+              <Component id="FlowFilterSearchField" alignment="0" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                  <Component id="FlowFilterSearchCaseSensitive" min="-2" max="-2" attributes="0"/>
-                  <EmptySpace max="-2" attributes="0"/>
-                  <Component id="FlowFilterSearchNegative" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="0" attributes="0">
+                      <Component id="FlowFilterSearchRegex" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="FlowFilterSearchCaseSensitive" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="FlowFilterSearchNegative" min="-2" max="-2" attributes="0"/>
+                      </Group>
+                  </Group>
                   <EmptySpace pref="16" max="32767" attributes="0"/>
               </Group>
-              <Component id="FlowFilterSearchField" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -208,6 +211,8 @@
                       <Component id="FlowFilterSearchCaseSensitive" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterSearchNegative" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Component id="FlowFilterSearchRegex" min="-2" max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
@@ -223,6 +228,11 @@
         <Component class="javax.swing.JCheckBox" name="FlowFilterSearchNegative">
           <Properties>
             <Property name="text" type="java.lang.String" value="Negative search"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSearchRegex">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Regex search"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -444,7 +454,7 @@
                       <Component id="FlowFilterCaptureSourceIntruder" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterCaptureSourceIntruderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="FlowFilterCaptureSourceExtender" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterCaptureSourceExtenderOnly" alignment="3" min="-2" max="-2" attributes="0"/>

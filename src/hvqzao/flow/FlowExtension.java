@@ -72,7 +72,10 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.15 (2017-09-07)";
+    private final String version = "Flow v1.16 (2017-10-05)";
+    // Changes in v1.16:
+    // - added Regex filtering
+    // - table update enforced once PopulateWorker / FilterWorker finishes
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -94,6 +97,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private JTextField flowFilterSearchField;
     private JCheckBox flowFilterSearchCaseSensitive;
     private JCheckBox flowFilterSearchNegative;
+    private JCheckBox flowFilterSearchRegex;
     private JCheckBox flowFilterSourceProxy;
     private JCheckBox flowFilterSourceProxyOnly;
     private JCheckBox flowFilterSourceSpider;
@@ -255,6 +259,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterSearchCaseSensitive = flowFilterPopup.getFlowFilterSearchCaseSensitive();
                 flowFilterSearchField = flowFilterPopup.getFlowFilterSearchField();
                 flowFilterSearchNegative = flowFilterPopup.getFlowFilterSearchNegative();
+                flowFilterSearchRegex = flowFilterPopup.getFlowFilterSearchRegex();
                 flowFilterSourceExtender = flowFilterPopup.getFlowFilterSourceExtender();
                 flowFilterSourceExtenderOnly = flowFilterPopup.getFlowFilterSourceExtenderOnly();
                 flowFilterSourceIntruder = flowFilterPopup.getFlowFilterSourceIntruder();
@@ -329,6 +334,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterParametrized.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchCaseSensitive.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchNegative.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSearchRegex.addActionListener(flowFilterScopeUpdateAction);
 
                 flowFilterSourceProxy.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSourceSpider.addActionListener(flowFilterScopeUpdateAction);
@@ -826,6 +832,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
             }
         }
+
+        @Override
+        protected void done() {
+            flowTable.repaint();
+        }
     }
 
     public static IBurpExtenderCallbacks getCallbacks() {
@@ -1212,6 +1223,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         flowFilterSearchField.setText("");
         flowFilterSearchCaseSensitive.setSelected(false);
         flowFilterSearchNegative.setSelected(false);
+        flowFilterSearchRegex.setSelected(false);
         // flowFilter
         flowFilterSourceProxy.setSelected(true);
         flowFilterSourceProxy.setEnabled(true);
@@ -1286,6 +1298,13 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             boolean searchHasAttr = false;
             if (flowFilterSearchCaseSensitive.isSelected()) {
                 searchAttrib.append("case sensitive");
+                searchHasAttr = true;
+            }
+            if (flowFilterSearchRegex.isSelected()) {
+                if (searchHasAttr) {
+                    searchAttrib.append(", ");
+                }
+                searchAttrib.append("regex");
                 searchHasAttr = true;
             }
             if (flowFilterSearchNegative.isSelected()) {
@@ -1434,10 +1453,18 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     } else {
                         resp = "";
                     }
-                    if (flowFilterSearchCaseSensitive.isSelected()) {
-                        found = Pattern.compile(Pattern.quote(text)).matcher(req).find() || Pattern.compile(Pattern.quote(text)).matcher(resp).find();
+                    if (flowFilterSearchRegex.isSelected()) {
+                        if (flowFilterSearchCaseSensitive.isSelected()) {
+                            found = Pattern.compile(text).matcher(req).find() || Pattern.compile(text).matcher(resp).find();
+                        } else {
+                            found = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(req).find() || Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(resp).find();
+                        }
                     } else {
-                        found = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(req).find() || Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(resp).find();
+                        if (flowFilterSearchCaseSensitive.isSelected()) {
+                            found = Pattern.compile(Pattern.quote(text)).matcher(req).find() || Pattern.compile(Pattern.quote(text)).matcher(resp).find();
+                        } else {
+                            found = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(req).find() || Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(resp).find();
+                        }
                     }
                     if (flowFilterSearchNegative.isSelected()) {
                         if (found) {
@@ -1505,6 +1532,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         protected Object doInBackground() throws Exception {
             flowTableSorter.setRowFilter(filter);
             return null;
+        }
+
+        @Override
+        protected void done() {
+            flowTable.repaint();
         }
     }
 
@@ -2061,7 +2093,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
             });
             add(addNewIssue);
-            
+
             //JMenuItem delete = new JMenuItem("Delete");
             //delete.addActionListener(new ActionListener() {
             //
