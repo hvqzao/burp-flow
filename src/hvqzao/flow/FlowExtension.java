@@ -72,10 +72,13 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.16 (2017-10-05)";
-    // Changes in v1.16:
-    // - added Regex filtering
-    // - table update enforced once PopulateWorker / FilterWorker finishes
+    private final String version = "Flow v1.17 (2017-10-13)";
+    // Changes in v1.17:
+    // - added Request, Response filter
+    //   if none is selected, search string can be in request, response or both
+    //   if one is selected (e.g. request, it must be found in request)
+    //   if both are selected - search string must be found in both request and response
+    // - added info when populating log from burp proxy is completed
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -98,6 +101,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private JCheckBox flowFilterSearchCaseSensitive;
     private JCheckBox flowFilterSearchNegative;
     private JCheckBox flowFilterSearchRegex;
+    private JCheckBox flowFilterSearchRequest;
+    private JCheckBox flowFilterSearchResponse;
     private JCheckBox flowFilterSourceProxy;
     private JCheckBox flowFilterSourceProxyOnly;
     private JCheckBox flowFilterSourceSpider;
@@ -260,6 +265,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterSearchField = flowFilterPopup.getFlowFilterSearchField();
                 flowFilterSearchNegative = flowFilterPopup.getFlowFilterSearchNegative();
                 flowFilterSearchRegex = flowFilterPopup.getFlowFilterSearchRegex();
+                flowFilterSearchRequest = flowFilterPopup.getFlowFilterSearchRequest();
+                flowFilterSearchResponse = flowFilterPopup.getFlowFilterSearchResponse();
                 flowFilterSourceExtender = flowFilterPopup.getFlowFilterSourceExtender();
                 flowFilterSourceExtenderOnly = flowFilterPopup.getFlowFilterSourceExtenderOnly();
                 flowFilterSourceIntruder = flowFilterPopup.getFlowFilterSourceIntruder();
@@ -335,6 +342,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterSearchCaseSensitive.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchNegative.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchRegex.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSearchRequest.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterSearchResponse.addActionListener(flowFilterScopeUpdateAction);
 
                 flowFilterSourceProxy.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSourceSpider.addActionListener(flowFilterScopeUpdateAction);
@@ -797,9 +806,13 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     class PopulateWorker extends SwingWorker<Object, FlowEntry> {
 
         private final IHttpRequestResponse[] history;
+        private final PrintWriter stdout;
 
         public PopulateWorker(IHttpRequestResponse[] history) {
             this.history = history;
+            stdout = new PrintWriter(callbacks.getStdout(), true);
+            stdout.print("Populating log with Burp Proxy history, Please wait... ");
+            stdout.flush();
         }
 
         @Override
@@ -836,6 +849,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         @Override
         protected void done() {
             flowTable.repaint();
+            stdout.println("done.");
         }
     }
 
@@ -1224,6 +1238,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         flowFilterSearchCaseSensitive.setSelected(false);
         flowFilterSearchNegative.setSelected(false);
         flowFilterSearchRegex.setSelected(false);
+        flowFilterSearchRequest.setSelected(false);
+        flowFilterSearchResponse.setSelected(false);
         // flowFilter
         flowFilterSourceProxy.setSelected(true);
         flowFilterSourceProxy.setEnabled(true);
@@ -1306,6 +1322,28 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
                 searchAttrib.append("regex");
                 searchHasAttr = true;
+            }
+            if (flowFilterSearchRequest.isSelected() && flowFilterSearchResponse.isSelected()) {
+                if (searchHasAttr) {
+                    searchAttrib.append(", ");
+                }
+                searchAttrib.append("in request & response");
+                searchHasAttr = true;
+            } else {
+                if (flowFilterSearchRequest.isSelected()) {
+                    if (searchHasAttr) {
+                        searchAttrib.append(", ");
+                    }
+                    searchAttrib.append("in request");
+                    searchHasAttr = true;
+                }
+                if (flowFilterSearchResponse.isSelected()) {
+                    if (searchHasAttr) {
+                        searchAttrib.append(", ");
+                    }
+                    searchAttrib.append("in response");
+                    searchHasAttr = true;
+                }
             }
             if (flowFilterSearchNegative.isSelected()) {
                 if (searchHasAttr) {
@@ -1444,6 +1482,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 // search
                 if (result && flowFilterSearchField.getText().length() != 0) {
                     boolean found;
+                    boolean foundInReq;
+                    boolean foundInResp;
                     String text = flowFilterSearchField.getText();
                     String req = new String(flowEntry.messageInfoPersisted.getRequest());
                     byte[] response = flowEntry.messageInfoPersisted.getResponse();
@@ -1455,16 +1495,29 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     }
                     if (flowFilterSearchRegex.isSelected()) {
                         if (flowFilterSearchCaseSensitive.isSelected()) {
-                            found = Pattern.compile(text).matcher(req).find() || Pattern.compile(text).matcher(resp).find();
+                            foundInReq = Pattern.compile(text).matcher(req).find();
+                            foundInResp = Pattern.compile(text).matcher(resp).find();
                         } else {
-                            found = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(req).find() || Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(resp).find();
+                            foundInReq = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(req).find();
+                            foundInResp = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(resp).find();
                         }
                     } else {
                         if (flowFilterSearchCaseSensitive.isSelected()) {
-                            found = Pattern.compile(Pattern.quote(text)).matcher(req).find() || Pattern.compile(Pattern.quote(text)).matcher(resp).find();
+                            foundInReq = Pattern.compile(Pattern.quote(text)).matcher(req).find();
+                            foundInResp = Pattern.compile(Pattern.quote(text)).matcher(resp).find();
                         } else {
-                            found = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(req).find() || Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(resp).find();
+                            foundInReq = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(req).find();
+                            foundInResp = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(resp).find();
                         }
+                    }
+                    if (flowFilterSearchRequest.isSelected() && flowFilterSearchResponse.isSelected()) {
+                        found = foundInReq && foundInResp;
+                    } else if (flowFilterSearchRequest.isSelected()) {
+                        found = foundInReq;
+                    } else if (flowFilterSearchResponse.isSelected()) {
+                        found = foundInResp;
+                    } else {
+                        found = foundInReq || foundInResp;
                     }
                     if (flowFilterSearchNegative.isSelected()) {
                         if (found) {
