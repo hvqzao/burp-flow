@@ -72,10 +72,11 @@ import javax.swing.event.DocumentListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.18 (2017-10-14)";
+    private final String version = "Flow v1.18 (2017-10-15)";
     // Changes in v1.18:
     // - added Target tool filter and capture source
     // - added active / passive scans to context menu
+    // - FIX: fixed sorting using status and length
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -737,8 +738,13 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     // both complete and incomplete requests
                     if (mode == 1) {
                         int row = flow.size();
-                        flow.add(new FlowEntry(toolFlag, messageInfo));
-                        flowTableModel.fireTableRowsInserted(row, row);
+                        try {
+                            flow.add(new FlowEntry(toolFlag, messageInfo));
+                            flowTableModel.fireTableRowsInserted(row, row);
+                        } catch (Exception ex) {
+                            // do nothing
+                            //ex.printStackTrace(stderr);
+                        }
                         triggerAutoDelete();
                     }
                     //stdout.println("[+] " + String.valueOf(helpers.analyzeRequest(messageInfo.getHttpService(), messageInfo.getRequest()).getUrl()));
@@ -1843,17 +1849,9 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     case 7:
                         return flowEntry.paramCount;
                     case 8:
-                        if (flowEntry.status != -1) {
-                            return flowEntry.status;
-                        } else {
-                            return "";
-                        }
+                        return flowEntry.status;
                     case 9:
-                        if (flowEntry.length != -1) {
-                            return flowEntry.length;
-                        } else {
-                            return "";
-                        }
+                        return flowEntry.length;
                     case 10:
                         return flowEntry.mime;
                     case 11:
@@ -1913,8 +1911,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private final String method;
         private final URL url;
         private final boolean hasParams;
-        private short paramCount;
-        private Short status;
+        private int paramCount;
+        private int status;
         private int length;
         private String mime;
         private final Date date;
@@ -2331,6 +2329,9 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         protected void setValue(Object value) {
             if (value instanceof Date) {
                 value = new SimpleDateFormat("HH:mm:ss d MMM yyyy").format(value);
+            }
+            if ((value instanceof Integer) && ((Integer) value == -1)) {
+                value = "";
             }
             super.setValue(value);
         }
