@@ -68,7 +68,7 @@
               <Group type="103" groupAlignment="0" attributes="0">
                   <Group type="102" alignment="0" attributes="0">
                       <Group type="103" groupAlignment="0" max="-2" attributes="0">
-                          <Component id="FlowFilterCaptureBySource" max="32767" attributes="0"/>
+                          <Component id="FlowFilterCaptureBySource" min="-2" pref="184" max="-2" attributes="0"/>
                           <Component id="FlowFilterBySource" max="32767" attributes="0"/>
                       </Group>
                       <EmptySpace max="32767" attributes="0"/>
@@ -277,9 +277,9 @@
                   <Component id="FlowFilterSourceExtenderOnly" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
-                  <Component id="FlowFilterSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <Component id="FlowFilterSourceTarget" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Component id="FlowFilterSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+                  <Component id="FlowFilterSourceTargetOnly" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
                   <Component id="FlowFilterSourceSpider" min="-2" max="-2" attributes="0"/>
@@ -301,11 +301,21 @@
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="FlowFilterSourceIntruderOnly" min="-2" max="-2" attributes="0"/>
               </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="FlowFilterSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterSourceTarget" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterSourceTargetOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="FlowFilterSourceProxy" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterSourceProxyOnly" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -340,9 +350,9 @@
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxy">
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceTarget">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Proxy"/>
+            <Property name="text" type="java.lang.String" value="Target"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JCheckBox" name="FlowFilterSourceSpider">
@@ -370,7 +380,7 @@
             <Property name="text" type="java.lang.String" value="Extender"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxyOnly">
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceTargetOnly">
           <Properties>
             <Property name="text" type="java.lang.String" value="Only"/>
           </Properties>
@@ -400,6 +410,16 @@
             <Property name="text" type="java.lang.String" value="Only"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxy">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Proxy"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterSourceProxyOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="FlowFilterCaptureBySource">
@@ -415,9 +435,9 @@
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
-                  <Component id="FlowFilterCaptureSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceTarget" min="-2" max="-2" attributes="0"/>
                   <EmptySpace max="32767" attributes="0"/>
-                  <Component id="FlowFilterCaptureSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceTargetOnly" min="-2" max="-2" attributes="0"/>
               </Group>
               <Group type="102" attributes="0">
                   <Component id="FlowFilterCaptureSourceExtender" min="-2" max="-2" attributes="0"/>
@@ -444,16 +464,26 @@
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="FlowFilterCaptureSourceIntruderOnly" min="-2" max="-2" attributes="0"/>
               </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="FlowFilterCaptureSourceProxy" min="-2" max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
+                  <Component id="FlowFilterCaptureSourceProxyOnly" min="-2" max="-2" attributes="0"/>
+              </Group>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
                   <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterCaptureSourceTarget" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterCaptureSourceTargetOnly" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
+                  <EmptySpace max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="FlowFilterCaptureSourceProxy" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterCaptureSourceProxyOnly" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="-2" attributes="0"/>
+                  <EmptySpace max="32767" attributes="0"/>
                   <Group type="103" groupAlignment="3" attributes="0">
                       <Component id="FlowFilterCaptureSourceSpider" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterCaptureSourceSpiderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
@@ -478,17 +508,18 @@
                       <Component id="FlowFilterCaptureSourceExtender" alignment="3" min="-2" max="-2" attributes="0"/>
                       <Component id="FlowFilterCaptureSourceExtenderOnly" alignment="3" min="-2" max="-2" attributes="0"/>
                   </Group>
+                  <EmptySpace max="-2" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>
       </Layout>
       <SubComponents>
-        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxy">
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceTarget">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Proxy"/>
+            <Property name="text" type="java.lang.String" value="Target"/>
           </Properties>
         </Component>
-        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxyOnly">
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceTargetOnly">
           <Properties>
             <Property name="text" type="java.lang.String" value="Only"/>
           </Properties>
@@ -543,6 +574,16 @@
             <Property name="text" type="java.lang.String" value="Only"/>
           </Properties>
         </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxy">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Proxy"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterCaptureSourceProxyOnly">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Only"/>
+          </Properties>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="FlowFilterBottom">
@@ -550,7 +591,7 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <EmptySpace min="0" pref="10" max="32767" attributes="0"/>
+              <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
