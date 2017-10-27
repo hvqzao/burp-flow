@@ -66,17 +66,19 @@ import java.awt.Dialog;
 import java.io.PrintWriter;
 import java.util.List;
 import javax.swing.JMenu;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.RowSorterEvent;
+import javax.swing.event.RowSorterListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.18 (2017-10-15)";
-    // Changes in v1.18:
-    // - added Target tool filter and capture source
-    // - added active / passive scans to context menu
-    // - FIX: fixed sorting using status and length
+    private final String version = "Flow v1.19 (2017-10-27)";
+    // Changes in v1.19:
+    // - row highlight now follows sort order
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -176,6 +178,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private int modalAutoDeleteKeep;
     private PrintWriter stderr;
     private FilterWorker flowFilterWorker;
+    private static int sortOrder;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -601,6 +604,25 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     column.setMinWidth(20);
                     column.setPreferredWidth(flowTableModel.getPreferredWidth(i));
                 }
+                flowTableSorter.addRowSorterListener(new RowSorterListener() {
+                    @Override
+                    public void sorterChanged(RowSorterEvent e) {
+                        if (e.getType() == RowSorterEvent.Type.SORT_ORDER_CHANGED) {
+                            List<? extends RowSorter.SortKey> keys = flowTableSorter.getSortKeys();
+                            if (keys.isEmpty() == false) {
+                                RowSorter.SortKey key = keys.get(0);
+                                int order = 0;
+                                if (key.getSortOrder() == SortOrder.ASCENDING) {
+                                    order = 1;
+                                }
+                                if (key.getSortOrder() == SortOrder.DESCENDING) {
+                                    order = -1;
+                                }
+                                sortOrder = order;
+                            }
+                        }
+                    }
+                });
                 callbacks.customizeUiComponent(flowTable);
                 flowTableScroll = new JScrollPane(flowTable, ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
                 flowTableScroll.setMinimumSize(new Dimension(40, 40));
@@ -1023,12 +1045,16 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         return modalResult;
     }
 
-    static Color cellBackground(int row, boolean isSelected) {
+    static Color cellBackground(int rowCount, int row, boolean isSelected) {
+        int r = row;
+        if (sortOrder == -1) {
+            r = rowCount - row;
+        }
         if (isSelected) {
             return COLOR_HIGHLIGHT;
-        } else if (row % 20 == 1) {
+        } else if (r % 20 == 1) {
             return COLOR_DARKGRAY; // new Color(225, 225, 225);
-        } else if (row % 2 == 1) {
+        } else if (r % 2 == 1) {
             return COLOR_LIGHTGRAY; // new Color(240, 240, 240);
         } else {
             return Color.WHITE;
@@ -2370,7 +2396,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             }
             c.setForeground(new Color(r, g, b));
 
-            c.setBackground(cellBackground(table.getRowCount() - row, isSelected));
+            c.setBackground(cellBackground(table.getRowCount(), row, isSelected));
 
             final ArrayList<String> reflections = new ArrayList<>();
             for (IParameter reflection : entry.getReflections()) {
@@ -2453,7 +2479,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         @Override
         public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
             //int modelRow = table.convertRowIndexToModel(row);
-            setBackground(cellBackground(table.getRowCount() - row, isSelected));
+            setBackground(cellBackground(table.getRowCount(), row, isSelected));
             if (value instanceof Boolean) {
                 setSelected((Boolean) value);
             }
