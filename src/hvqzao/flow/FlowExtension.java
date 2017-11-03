@@ -76,9 +76,11 @@ import javax.swing.event.RowSorterListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.19 (2017-10-27)";
-    // Changes in v1.19:
-    // - row highlight now follows sort order
+    private final String version = "Flow v1.20 (2017-11-03)";
+    // Changes in v1.20:
+    // - Added notification when search filter is working
+    // - FIX: Pattern.compile inside loop
+    //
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
     private static IExtensionHelpers helpers;
@@ -179,6 +181,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private PrintWriter stderr;
     private FilterWorker flowFilterWorker;
     private static int sortOrder;
+    private String flowFilterText = "";
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
@@ -249,7 +252,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             flowFilterCaptureSourceIntruderOnlyOrig = flowFilterCaptureSourceIntruder.isSelected();
                             flowFilterCaptureSourceExtenderOnlyOrig = flowFilterCaptureSourceExtender.isSelected();
                         }
-                        flowFilterUpdateDescription();
+                        flowFilterUpdateDescription(true);
                     }
                 };
                 // layout
@@ -1146,7 +1149,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             flowFilterCaptureSourceExtender.setEnabled(true);
         }
 
-        flowFilterUpdateDescription();
+        flowFilterUpdateDescription(true);
     }
 
     void flowFilterSourceOnly(JCheckBox which) {
@@ -1392,8 +1395,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         flowFilterUpdate();
     }
 
-    // flow filter update description
-    private void flowFilterUpdateDescription() {
+    // flow filter description update
+    private void flowFilterUpdateDescription(boolean show) {
         StringBuilder filterDescription = new StringBuilder("Filter: ");
         // filter
         boolean filterAll = true;
@@ -1562,7 +1565,12 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 filterDescription.append("None");
             }
         }
-        flowFilter.setText(filterDescription.toString());
+        flowFilterText = filterDescription.toString();
+        if (show && (flowFilterWorker == null || flowFilterWorker.isDone())) {
+            flowFilter.setText(flowFilterText);
+        } else {
+            flowFilter.setText(flowFilterText + " (Please wait...)");
+        }
     }
 
     // flow filter update
@@ -1570,6 +1578,23 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         final ArrayList<RowFilter<FlowTableModel, Number>> mergedFilter = new ArrayList<>();
         // manual filter
         RowFilter<FlowTableModel, Number> manualFilter;
+        // filter logic
+        final String text = flowFilterSearchField.getText();
+        final Pattern pattern;
+        if (flowFilterSearchRegex.isSelected()) {
+            if (flowFilterSearchCaseSensitive.isSelected()) {
+                pattern = Pattern.compile(text);
+            } else {
+                pattern = Pattern.compile(text, Pattern.CASE_INSENSITIVE);
+            }
+        } else {
+            if (flowFilterSearchCaseSensitive.isSelected()) {
+                pattern = Pattern.compile(Pattern.quote(text));
+            } else {
+                pattern = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE);
+            }
+        }
+        // process
         manualFilter = new RowFilter<FlowTableModel, Number>() {
             @Override
             public boolean include(javax.swing.RowFilter.Entry<? extends FlowTableModel, ? extends Number> entry) {
@@ -1591,9 +1616,6 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 // search
                 if (result && flowFilterSearchField.getText().length() != 0) {
                     boolean found;
-                    boolean foundInReq;
-                    boolean foundInResp;
-                    String text = flowFilterSearchField.getText();
                     String req = new String(flowEntry.messageInfoPersisted.getRequest());
                     byte[] response = flowEntry.messageInfoPersisted.getResponse();
                     String resp;
@@ -1602,23 +1624,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     } else {
                         resp = "";
                     }
-                    if (flowFilterSearchRegex.isSelected()) {
-                        if (flowFilterSearchCaseSensitive.isSelected()) {
-                            foundInReq = Pattern.compile(text).matcher(req).find();
-                            foundInResp = Pattern.compile(text).matcher(resp).find();
-                        } else {
-                            foundInReq = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(req).find();
-                            foundInResp = Pattern.compile(text, Pattern.CASE_INSENSITIVE).matcher(resp).find();
-                        }
-                    } else {
-                        if (flowFilterSearchCaseSensitive.isSelected()) {
-                            foundInReq = Pattern.compile(Pattern.quote(text)).matcher(req).find();
-                            foundInResp = Pattern.compile(Pattern.quote(text)).matcher(resp).find();
-                        } else {
-                            foundInReq = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(req).find();
-                            foundInResp = Pattern.compile(Pattern.quote(text), Pattern.CASE_INSENSITIVE).matcher(resp).find();
-                        }
-                    }
+                    boolean foundInReq = pattern.matcher(req).find();
+                    boolean foundInResp = pattern.matcher(resp).find();
                     if (flowFilterSearchRequest.isSelected() && flowFilterSearchResponse.isSelected()) {
                         found = foundInReq && foundInResp;
                     } else if (flowFilterSearchRequest.isSelected()) {
@@ -1671,7 +1678,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //        flowTableSorter.setRowFilter(RowFilter.andFilter(mergedFilter));
         //    }
         //});
-        flowFilterUpdateDescription();
+        flowFilterUpdateDescription(false);
         if (flowFilterWorker != null) {
             try {
                 flowFilterWorker.cancel(true);
@@ -1698,6 +1705,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
         @Override
         protected void done() {
+            flowFilter.setText(flowFilterText);
             flowTable.repaint();
         }
     }
