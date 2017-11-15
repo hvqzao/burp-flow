@@ -1,4 +1,4 @@
-package hvqzao.flow;
+package hvqzao.flow.ui;
 
 import javax.swing.JButton;
 import javax.swing.JScrollPane;

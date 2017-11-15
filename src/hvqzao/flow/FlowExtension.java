@@ -1,12 +1,11 @@
 // Flow Burp Extension, (c) 2015-2017 Marcin Woloszyn (@hvqzao), Released under MIT license
 package hvqzao.flow;
 
+import hvqzao.flow.ui.DialogWrapper;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.datatransfer.Clipboard;
@@ -43,7 +42,6 @@ import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.table.AbstractTableModel;
 import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -62,6 +60,8 @@ import burp.IRequestInfo;
 import burp.IResponseInfo;
 import burp.IScopeChangeListener;
 import burp.ITab;
+import hvqzao.flow.ui.BooleanTableCellRenderer;
+import static hvqzao.flow.ui.Helper.cellBackground;
 import java.awt.Dialog;
 import java.io.PrintWriter;
 import java.util.List;
@@ -76,10 +76,12 @@ import javax.swing.event.RowSorterListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.20 (2017-11-03)";
-    // Changes in v1.20:
-    // - Added notification when search filter is working
-    // - FIX: Pattern.compile inside loop
+    private final String version = "Flow v1.21 (2017-11-15)";
+    // Changes in v1.21:
+    // - Column reordering enabled
+    // - Updated row background highlight behavior
+    // - Added request and response preview in Add New Sitemap Issue
+    // - Minor refactoring
     //
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
@@ -162,11 +164,8 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     // version };
     // private int adIndex = 0;
     // private JLabel flowFilterAd;
-    private SeparateView separateView;
+    private SeparateViewDialog separateView;
     private JButton flowFilterHelpExt;
-    private static final Color COLOR_HIGHLIGHT = new Color(255, 206, 130);
-    private static final Color COLOR_DARKGRAY = new Color(240, 240, 240);
-    private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
     private ImageIcon iconHelp;
     private boolean modalResult;
     private int modalMode;
@@ -182,9 +181,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private FilterWorker flowFilterWorker;
     private static int sortOrder;
     private String flowFilterText = "";
+    private static FlowExtension instance;
 
     @Override
     public void registerExtenderCallbacks(final IBurpExtenderCallbacks callbacks) {
+        instance = this;
         FlowExtension.callbacks = callbacks;
         helpers = callbacks.getHelpers();
         stderr = new PrintWriter(callbacks.getStderr(), true);
@@ -586,7 +587,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                             @Override
                             public void run() {
                                 if (separateView == null) {
-                                    separateView = new SeparateView(burpFrame, "Flow");
+                                    separateView = new SeparateViewDialog(burpFrame, "Flow");
                                 }
                             }
                         });
@@ -599,8 +600,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowTableSorter = new TableRowSorter<>(flowTableModel);
                 flowTable = new FlowTable(flowTableModel);
                 flowTable.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-                // flowTable.getTableHeader().setReorderingAllowed(true);
-                // flowTable.setAutoCreateRowSorter(true);
+                //flowTable.setAutoCreateRowSorter(true);
                 flowTable.setRowSorter(flowTableSorter);
                 for (int i = 0; i < flowTableModel.getColumnCount(); i++) {
                     TableColumn column = flowTable.getColumnModel().getColumn(i);
@@ -631,6 +631,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowTableScroll.setMinimumSize(new Dimension(40, 40));
                 callbacks.customizeUiComponent(flowTableScroll);
                 flowTable.setDefaultRenderer(Boolean.class, new BooleanTableCellRenderer());
+                flowTable.getTableHeader().setReorderingAllowed(true);
                 // flowTab.setTopComponent(flowTableScroll);
                 flowTablePane.add(flowTableScroll, BorderLayout.CENTER);
                 flowTab.setTopComponent(flowTablePane);
@@ -946,7 +947,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private boolean showAddNewIssueDialog() {
         final JDialog dialog = new JDialog(burpFrame, "Add New Sitemap Issue", Dialog.ModalityType.DOCUMENT_MODAL);
         DialogWrapper wrapper = new DialogWrapper();
-        final FlowAddNewIssue addNewIssue = new FlowAddNewIssue(callbacks);
+        final FlowAddNewIssue addNewIssue = new FlowAddNewIssue(callbacks, popupPointedFlowEntry);
         // customize options pane
         JButton help = addNewIssue.getHelpButton();
         help.setIcon(iconHelp);
@@ -955,7 +956,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //
         // wrap optionsPane
         wrapper.getScrollPane().getViewport().add(addNewIssue);
-        dialog.setBounds(100, 100, 526, 670);
+        dialog.setBounds(100, 100, 920, 670);
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
@@ -975,7 +976,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 //for (int i=0 ; i < rows.length ; i++) {
                 //    selected[i] = flow.get(rows[i]);
                 //}
-                callbacks.addScanIssue(addNewIssue.getIssue(popupPointedFlowEntry));
+                callbacks.addScanIssue(addNewIssue.getIssue());
                 dialog.dispose();
             }
         });
@@ -996,7 +997,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private boolean showOptionsDialog() {
         final JDialog dialog = new JDialog(burpFrame, "Flow Extension Options", Dialog.ModalityType.DOCUMENT_MODAL);
         DialogWrapper wrapper = new DialogWrapper();
-        final FlowFilterPane optionsPane = new FlowFilterPane(callbacks);
+        final FlowOptionsPane optionsPane = new FlowOptionsPane(callbacks);
         // customize options pane
         JButton modeHelp = optionsPane.getModeHelp();
         modeHelp.setIcon(iconHelp);
@@ -1048,23 +1049,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         return modalResult;
     }
 
-    static Color cellBackground(int rowCount, int row, boolean isSelected) {
-        int r = row;
-        if (sortOrder == -1) {
-            r = rowCount - row;
-        }
-        if (isSelected) {
-            return COLOR_HIGHLIGHT;
-        } else if (r % 20 == 1) {
-            return COLOR_DARKGRAY; // new Color(225, 225, 225);
-        } else if (r % 2 == 1) {
-            return COLOR_LIGHTGRAY; // new Color(240, 240, 240);
-        } else {
-            return Color.WHITE;
-        }
-    }
-
-    void flowFilterCaptureSourceOnly(JCheckBox which) {
+    private void flowFilterCaptureSourceOnly(JCheckBox which) {
 
         if (which != flowFilterCaptureSourceTargetOnly && flowFilterCaptureSourceTargetOnly.isSelected()) {
             flowFilterCaptureSourceTargetOnly.setSelected(false);
@@ -2421,10 +2406,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
     }
 
-    //
-    // SeparateView
-    //
-    public class SeparateView extends JDialog {
+    public class SeparateViewDialog extends JDialog {
 
         private final Component parent;
         private final String title;
@@ -2446,7 +2428,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             super.dispose();
         }
 
-        public SeparateView(final Component parent, String title) {
+        public SeparateViewDialog(final Component parent, String title) {
             flowFilterHelpExt.setEnabled(false);
             flowComponent.remove(flowTab);
             flowComponent.revalidate();
@@ -2467,31 +2449,11 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         }
     }
 
-    private static class BooleanTableCellRenderer extends JCheckBox implements TableCellRenderer {
-
-        public BooleanTableCellRenderer() {
-            super();
-            initialize();
-        }
-
-        private void initialize() {
-            setOpaque(true);
-            putClientProperty("JComponent.sizeVariant", "small");
-            SwingUtilities.updateComponentTreeUI(this);
-            setLayout(new GridBagLayout());
-            setMargin(new Insets(0, 0, 0, 0));
-            setHorizontalAlignment(JLabel.CENTER);
-            setBorderPainted(true);
-        }
-
-        @Override
-        public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
-            //int modelRow = table.convertRowIndexToModel(row);
-            setBackground(cellBackground(table.getRowCount(), row, isSelected));
-            if (value instanceof Boolean) {
-                setSelected((Boolean) value);
-            }
-            return this;
-        }
+    public static int getSortOrder() {
+        return sortOrder;
+    }
+    
+    public static FlowExtension getInstance() {
+        return instance;
     }
 }
