@@ -82,7 +82,7 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         modeHelp.setMinimumSize(new java.awt.Dimension(24, 24));
         modeHelp.setPreferredSize(new java.awt.Dimension(24, 24));
 
-        jLabel1.setText("<html><b style='color:#e58900;font-size:10px'>Operation mode</b></html>");
+        jLabel1.setText("<html><b style='color:#ff6633;font-size:10px'>Operation mode</b></html>");
 
         buttonGroup1.add(Mode2);
         Mode2.setSelected(true);
@@ -100,7 +100,7 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         miscHelp.setMinimumSize(new java.awt.Dimension(24, 24));
         miscHelp.setPreferredSize(new java.awt.Dimension(24, 24));
 
-        jLabel4.setText("<html><b style='color:#e58900;font-size:10px'>Miscellaneous</b></html>");
+        jLabel4.setText("<html><b style='color:#ff6633;font-size:10px'>Miscellaneous</b></html>");
         jLabel4.setToolTipText("");
 
         autoDelete.setText("Automatically delete oldest requests. Keep:");

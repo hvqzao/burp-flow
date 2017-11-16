@@ -5,7 +5,7 @@ import java.awt.Color;
 
 public class Helper {
 
-    private static final Color COLOR_HIGHLIGHT = new Color(255, 206, 130);
+    private static final Color COLOR_HIGHLIGHT = new Color(255, 197, 153); // new Color(255, 206, 130);
     private static final Color COLOR_DARKGRAY = new Color(240, 240, 240);
     private static final Color COLOR_LIGHTGRAY = new Color(250, 250, 250);
 

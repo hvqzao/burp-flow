@@ -76,12 +76,10 @@ import javax.swing.event.RowSorterListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.21 (2017-11-15)";
-    // Changes in v1.21:
-    // - Column reordering enabled
-    // - Updated row background highlight behavior
-    // - Added request and response preview in Add New Sitemap Issue
-    // - Minor refactoring
+    private final String version = "Flow v1.22 (2017-11-16)";
+    // Changes in v1.22:
+    // - "Add new sitemap issue" now supports request & response highlight marks
+    // - Updated coloring theme
     //
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
@@ -177,7 +175,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private boolean modalAutoPopulate;
     private boolean modalAutoDelete;
     private int modalAutoDeleteKeep;
-    private PrintWriter stderr;
+    private static PrintWriter stderr;
     private FilterWorker flowFilterWorker;
     private static int sortOrder;
     private String flowFilterText = "";
@@ -956,7 +954,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //
         // wrap optionsPane
         wrapper.getScrollPane().getViewport().add(addNewIssue);
-        dialog.setBounds(100, 100, 920, 670);
+        dialog.setBounds(100, 100, 1070, 670);
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
@@ -966,18 +964,20 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         ok.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                modalResult = true;
-                // FUTURE: multiple entries with same IHttpService?
-                //int[] rows = flowTable.getSelectedRows();
-                //for (int i = 0; i < rows.length; i++) {
-                //    rows[i] = flowTable.convertRowIndexToModel(rows[i]);
-                //}
-                //FlowEntry[] selected = new FlowEntry[rows.length];
-                //for (int i=0 ; i < rows.length ; i++) {
-                //    selected[i] = flow.get(rows[i]);
-                //}
-                callbacks.addScanIssue(addNewIssue.getIssue());
-                dialog.dispose();
+                if (addNewIssue.dataValidation()) {
+                    modalResult = true;
+                    // FUTURE: multiple entries with same IHttpService?
+                    //int[] rows = flowTable.getSelectedRows();
+                    //for (int i = 0; i < rows.length; i++) {
+                    //    rows[i] = flowTable.convertRowIndexToModel(rows[i]);
+                    //}
+                    //FlowEntry[] selected = new FlowEntry[rows.length];
+                    //for (int i=0 ; i < rows.length ; i++) {
+                    //    selected[i] = flow.get(rows[i]);
+                    //}
+                    callbacks.addScanIssue(addNewIssue.getIssue());
+                    dialog.dispose();
+                }
             }
         });
         JButton cancel = wrapper.getCancelButton();
@@ -2256,6 +2256,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    //int[] rows = flowTable.getSelectedRows();
+                    //for (int i = 0; i < rows.length; i++) {
+                    //    rows[i] = flowTable.convertRowIndexToModel(rows[i]);
+                    //}
                     showAddNewIssueDialog();
                 }
 
@@ -2452,8 +2456,12 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     public static int getSortOrder() {
         return sortOrder;
     }
-    
+
     public static FlowExtension getInstance() {
         return instance;
+    }
+
+    public static PrintWriter getStderr() {
+        return stderr;
     }
 }
