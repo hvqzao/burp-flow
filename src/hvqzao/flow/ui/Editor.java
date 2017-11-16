@@ -3,15 +3,11 @@ package hvqzao.flow.ui;
 import burp.IBurpExtenderCallbacks;
 import burp.IExtensionHelpers;
 import hvqzao.flow.FlowExtension;
+import java.awt.Font;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JTextArea;
-import javax.swing.SwingUtilities;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultCaret;
 
@@ -27,72 +23,72 @@ public class Editor extends javax.swing.JPanel implements IEditor {
     public Editor() {
         initComponents();
         searchIndex = -1;
-        next.addMouseListener(new MouseListener() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-            }
-
-            @Override
-            public void mousePressed(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseReleased(MouseEvent e) {
-                FlowExtension.getCallbacks().issueAlert("X");
-                try {
-                    String searchText = search.getText().toLowerCase();
-                    FlowExtension.getStderr().println("search: " + searchText); // debug
-                    final int searchTextLength = searchText.length();
-                    if (searchTextLength > 0) {
-                        String message = editor.getText().toLowerCase();
-                        int result;
-                        if (searchIndex == -1) {
-                            result = message.indexOf(searchText);
-                        } else {
-                            result = message.indexOf(searchText, searchIndex);
-                            if (result == -1) {
-                                result = message.indexOf(searchText);
-                            }
-                        }
-                        final int pos = result;
-                        if (pos == -1) {
-                            SwingUtilities.invokeLater(new Runnable() {
-                                @Override
-                                public void run() {
-                                    FlowExtension.getStderr().println(String.valueOf(pos)); // debug
-                                    searchIndex = pos + 1;
-                                    editor.requestFocusInWindow();
-                                    editor.selectAll();
-                                    Rectangle viewRect;
-                                    try {
-                                        viewRect = editor.modelToView(pos);
-                                    } catch (BadLocationException ex) {
-                                        ex.printStackTrace(FlowExtension.getStderr());
-                                        return;
-                                    }
-                                    editor.scrollRectToVisible(viewRect);
-                                    editor.setCaretPosition(pos + searchTextLength);
-                                    editor.moveCaretPosition(pos);
-                                }
-                            });
-                        }
-                    }
-                } catch (Exception ex) {
-                    ex.printStackTrace(FlowExtension.getStderr());
-                }
-            }
-
-            @Override
-            public void mouseEntered(MouseEvent e) {
-            }
-
-            @Override
-            public void mouseExited(MouseEvent e) {
-            }
-        });
         next.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                String searchText = search.getText().toLowerCase();
+                final int searchTextLength = searchText.length();
+                if (searchTextLength > 0) {
+                    String message = editor.getText().toLowerCase();
+                    int result;
+                    if (searchIndex == -1) {
+                        result = message.indexOf(searchText);
+                    } else {
+                        result = message.indexOf(searchText, searchIndex);
+                        if (result == -1) {
+                            result = message.indexOf(searchText);
+                        }
+                    }
+                    final int pos = result;
+                    if (pos != -1) {
+                        searchIndex = pos + 1;
+                        editor.requestFocusInWindow();
+                        Rectangle viewRect;
+                        try {
+                            viewRect = editor.modelToView(pos);
+                        } catch (BadLocationException ex) {
+                            ex.printStackTrace(FlowExtension.getStderr());
+                            return;
+                        }
+                        editor.scrollRectToVisible(viewRect);
+                        editor.setCaretPosition(pos + searchTextLength);
+                        editor.moveCaretPosition(pos);
+                    }
+                }
+            }
+        });
+        prev.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                String searchText = search.getText().toLowerCase();
+                final int searchTextLength = searchText.length();
+                if (searchTextLength > 0) {
+                    String message = editor.getText().toLowerCase();
+                    int result;
+                    if (searchIndex < 2) {
+                        result = message.lastIndexOf(searchText);
+                    } else {
+                        result = message.lastIndexOf(searchText, searchIndex - 2);
+                        if (result == -1) {
+                            result = message.lastIndexOf(searchText);
+                        }
+                    }
+                    final int pos = result;
+                    if (pos != -1) {
+                        searchIndex = pos + 1;
+                        editor.requestFocusInWindow();
+                        Rectangle viewRect;
+                        try {
+                            viewRect = editor.modelToView(pos);
+                        } catch (BadLocationException ex) {
+                            ex.printStackTrace(FlowExtension.getStderr());
+                            return;
+                        }
+                        editor.scrollRectToVisible(viewRect);
+                        editor.setCaretPosition(pos + searchTextLength);
+                        editor.moveCaretPosition(pos);
+                    }
+                }
             }
         });
     }
@@ -109,6 +105,7 @@ public class Editor extends javax.swing.JPanel implements IEditor {
         callbacks.customizeUiComponent(prev);
         callbacks.customizeUiComponent(next);
         callbacks.customizeUiComponent(search);
+        editor.setFont(new Font("monospaced", Font.PLAIN, 11));
     }
 
     @Override
@@ -137,20 +134,18 @@ public class Editor extends javax.swing.JPanel implements IEditor {
         next = new javax.swing.JButton();
         search = new javax.swing.JTextField();
 
+        editor.setEditable(false);
         editor.setColumns(20);
         editor.setLineWrap(true);
         editor.setRows(5);
-        editor.setToolTipText("");
+        editor.setToolTipText(null);
         jScrollPane5.setViewportView(editor);
 
         prev.setText("<");
-        prev.setEnabled(false);
 
         next.setText(">");
-        next.setEnabled(false);
 
-        search.setToolTipText("");
-        search.setEnabled(false);
+        search.setToolTipText(null);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
