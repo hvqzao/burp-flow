@@ -190,7 +190,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         // set extension name
         callbacks.setExtensionName("Flow");
         // detect burp
-        burpFree = String.valueOf(callbacks.getBurpVersion()[0]).equals("Burp Suite Free Edition");
+        burpFree = String.valueOf(callbacks.getBurpVersion()[0]).equals("Burp Suite Free Edition") || String.valueOf(callbacks.getBurpVersion()[0]).equals("Burp Suite Community Edition");
         // draw UI
         SwingUtilities.invokeLater(new Runnable() {
 
