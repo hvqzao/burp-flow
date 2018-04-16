@@ -142,7 +142,11 @@
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" attributes="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="FlowFilterInscope" min="-2" max="-2" attributes="0"/>
+                      <Group type="102" attributes="0">
+                          <Component id="FlowFilterInscope" min="-2" max="-2" attributes="0"/>
+                          <EmptySpace max="-2" attributes="0"/>
+                          <Component id="FlowFilterOutofscope" min="-2" max="-2" attributes="0"/>
+                      </Group>
                       <Component id="FlowFilterParametrized" min="-2" max="-2" attributes="0"/>
                   </Group>
                   <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
@@ -152,7 +156,10 @@
         <DimensionLayout dim="1">
           <Group type="103" groupAlignment="0" attributes="0">
               <Group type="102" alignment="0" attributes="0">
-                  <Component id="FlowFilterInscope" min="-2" max="-2" attributes="0"/>
+                  <Group type="103" groupAlignment="3" attributes="0">
+                      <Component id="FlowFilterInscope" alignment="3" min="-2" max="-2" attributes="0"/>
+                      <Component id="FlowFilterOutofscope" alignment="3" min="-2" max="-2" attributes="0"/>
+                  </Group>
                   <EmptySpace max="32767" attributes="0"/>
                   <Component id="FlowFilterParametrized" min="-2" max="-2" attributes="0"/>
               </Group>
@@ -162,7 +169,7 @@
       <SubComponents>
         <Component class="javax.swing.JCheckBox" name="FlowFilterInscope">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Show only in-scope items"/>
+            <Property name="text" type="java.lang.String" value="Show only in-scope"/>
           </Properties>
           <AccessibilityProperties>
             <Property name="AccessibleContext.accessibleName" type="java.lang.String" value="FlowFilterInscope"/>
@@ -171,6 +178,11 @@
         <Component class="javax.swing.JCheckBox" name="FlowFilterParametrized">
           <Properties>
             <Property name="text" type="java.lang.String" value="Show only parametrized requests"/>
+          </Properties>
+        </Component>
+        <Component class="javax.swing.JCheckBox" name="FlowFilterOutofscope">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="out-of-scope items"/>
           </Properties>
         </Component>
       </SubComponents>
@@ -187,7 +199,6 @@
       <Layout>
         <DimensionLayout dim="0">
           <Group type="103" groupAlignment="0" attributes="0">
-              <Component id="FlowFilterSearchField" alignment="0" max="32767" attributes="0"/>
               <Group type="102" alignment="0" attributes="0">
                   <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
                   <Group type="103" groupAlignment="0" attributes="0">
@@ -203,7 +214,11 @@
                       </Group>
                       <Component id="FlowFilterSearchNegative" min="-2" max="-2" attributes="0"/>
                   </Group>
-                  <EmptySpace max="32767" attributes="0"/>
+                  <EmptySpace pref="10" max="32767" attributes="0"/>
+              </Group>
+              <Group type="102" alignment="0" attributes="0">
+                  <Component id="FlowFilterSearchField" min="-2" pref="242" max="-2" attributes="0"/>
+                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
               </Group>
           </Group>
         </DimensionLayout>

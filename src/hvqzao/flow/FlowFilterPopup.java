@@ -43,6 +43,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         callbacks.customizeUiComponent(FlowFilterCaptureSourceSpider);
         callbacks.customizeUiComponent(FlowFilterCaptureSourceSpiderOnly);
         callbacks.customizeUiComponent(FlowFilterInscope);
+        callbacks.customizeUiComponent(FlowFilterOutofscope);
         callbacks.customizeUiComponent(FlowFilterParametrized);
         callbacks.customizeUiComponent(FlowFilterSearchCaseSensitive);
         callbacks.customizeUiComponent(FlowFilterSearchField);
@@ -150,6 +151,10 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         return FlowFilterInscope;
     }
 
+    public JCheckBox getFlowFilterOutofscope() {
+        return FlowFilterOutofscope;
+    }
+
     public JCheckBox getFlowFilterParametrized() {
         return FlowFilterParametrized;
     }
@@ -252,6 +257,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         FlowFilterByReqType = new javax.swing.JPanel();
         FlowFilterInscope = new javax.swing.JCheckBox();
         FlowFilterParametrized = new javax.swing.JCheckBox();
+        FlowFilterOutofscope = new javax.swing.JCheckBox();
         FlowFilterBySearch = new javax.swing.JPanel();
         FlowFilterSearchField = new javax.swing.JTextField();
         FlowFilterSearchCaseSensitive = new javax.swing.JCheckBox();
@@ -306,9 +312,11 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
 
         FlowFilterByReqType.setBorder(javax.swing.BorderFactory.createTitledBorder("Filter by request type"));
 
-        FlowFilterInscope.setText("Show only in-scope items");
+        FlowFilterInscope.setText("Show only in-scope");
 
         FlowFilterParametrized.setText("Show only parametrized requests");
+
+        FlowFilterOutofscope.setText("out-of-scope items");
 
         javax.swing.GroupLayout FlowFilterByReqTypeLayout = new javax.swing.GroupLayout(FlowFilterByReqType);
         FlowFilterByReqType.setLayout(FlowFilterByReqTypeLayout);
@@ -316,14 +324,19 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
             FlowFilterByReqTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(FlowFilterByReqTypeLayout.createSequentialGroup()
                 .addGroup(FlowFilterByReqTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(FlowFilterInscope)
+                    .addGroup(FlowFilterByReqTypeLayout.createSequentialGroup()
+                        .addComponent(FlowFilterInscope)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(FlowFilterOutofscope))
                     .addComponent(FlowFilterParametrized))
                 .addGap(0, 0, Short.MAX_VALUE))
         );
         FlowFilterByReqTypeLayout.setVerticalGroup(
             FlowFilterByReqTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(FlowFilterByReqTypeLayout.createSequentialGroup()
-                .addComponent(FlowFilterInscope)
+                .addGroup(FlowFilterByReqTypeLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(FlowFilterInscope)
+                    .addComponent(FlowFilterOutofscope))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(FlowFilterParametrized))
         );
@@ -346,7 +359,6 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         FlowFilterBySearch.setLayout(FlowFilterBySearchLayout);
         FlowFilterBySearchLayout.setHorizontalGroup(
             FlowFilterBySearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(FlowFilterSearchField)
             .addGroup(FlowFilterBySearchLayout.createSequentialGroup()
                 .addGap(1, 1, 1)
                 .addGroup(FlowFilterBySearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -359,7 +371,10 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(FlowFilterSearchResponse))
                     .addComponent(FlowFilterSearchNegative))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(10, Short.MAX_VALUE))
+            .addGroup(FlowFilterBySearchLayout.createSequentialGroup()
+                .addComponent(FlowFilterSearchField, javax.swing.GroupLayout.PREFERRED_SIZE, 242, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 0, Short.MAX_VALUE))
         );
         FlowFilterBySearchLayout.setVerticalGroup(
             FlowFilterBySearchLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -645,6 +660,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
     private javax.swing.JCheckBox FlowFilterCaptureSourceTarget;
     private javax.swing.JCheckBox FlowFilterCaptureSourceTargetOnly;
     private javax.swing.JCheckBox FlowFilterInscope;
+    private javax.swing.JCheckBox FlowFilterOutofscope;
     private javax.swing.JCheckBox FlowFilterParametrized;
     private javax.swing.JCheckBox FlowFilterSearchCaseSensitive;
     private javax.swing.JTextField FlowFilterSearchField;

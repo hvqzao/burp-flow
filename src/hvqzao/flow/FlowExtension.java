@@ -65,6 +65,7 @@ import static hvqzao.flow.ui.Helper.cellBackground;
 import java.awt.Dialog;
 import java.io.PrintWriter;
 import java.util.List;
+import javax.swing.JComponent;
 import javax.swing.JMenu;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
@@ -76,10 +77,12 @@ import javax.swing.event.RowSorterListener;
 
 public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScopeChangeListener, IExtensionStateListener {
 
-    private final String version = "Flow v1.22 (2017-11-16)";
-    // Changes in v1.22:
-    // - "Add new sitemap issue" now supports request & response highlight marks
-    // - Updated coloring theme
+    private final String version = "Flow v1.23 (2018-04-16) (unreleased)";
+    // Changes in v1.23:
+    // - Center "Add new sitemap issue" dialog, resize according to preferred size
+    // - Filter by search term does not break window anymore when search is too long
+    // - Displaying path instead of pathQuery in URL column
+    // - Added out-of-scope filter
     //
     //private final String versionFull = "<html>" + version + ", <a href=\"https://github.com/hvqzao/burp-flow\">https://github.com/hvqzao/burp-flow</a>, MIT license</html>";
     private static IBurpExtenderCallbacks callbacks;
@@ -98,6 +101,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     private boolean flowFilterPopupReady;
     private JLabel flowFilter;
     private JCheckBox flowFilterInscope;
+    private JCheckBox flowFilterOutofscope;
     private JCheckBox flowFilterParametrized;
     private JTextField flowFilterSearchField;
     private JCheckBox flowFilterSearchCaseSensitive;
@@ -272,6 +276,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowFilterCaptureSourceExtender = flowFilterPopup.getFlowFilterCaptureSourceExtender();
                 flowFilterCaptureSourceExtenderOnly = flowFilterPopup.getFlowFilterCaptureSourceExtenderOnly();
                 flowFilterInscope = flowFilterPopup.getFlowFilterInscope();
+                flowFilterOutofscope = flowFilterPopup.getFlowFilterOutofscope();
                 flowFilterParametrized = flowFilterPopup.getFlowFilterParametrized();
                 flowFilterSearchCaseSensitive = flowFilterPopup.getFlowFilterSearchCaseSensitive();
                 flowFilterSearchField = flowFilterPopup.getFlowFilterSearchField();
@@ -354,7 +359,22 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                         flowFilterUpdate();
                     }
                 });
-                flowFilterInscope.addActionListener(flowFilterScopeUpdateAction);
+                //flowFilterInscope.addActionListener(flowFilterScopeUpdateAction);
+                //flowFilterOutofscope.addActionListener(flowFilterScopeUpdateAction);
+                flowFilterInscope.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterOutofscope.setSelected(false);
+                        flowFilterUpdate();
+                    }
+                });
+                flowFilterOutofscope.addActionListener(new ActionListener() {
+                    @Override
+                    public void actionPerformed(ActionEvent e) {
+                        flowFilterInscope.setSelected(false);
+                        flowFilterUpdate();
+                    }
+                });
                 flowFilterParametrized.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchCaseSensitive.addActionListener(flowFilterScopeUpdateAction);
                 flowFilterSearchNegative.addActionListener(flowFilterScopeUpdateAction);
@@ -954,7 +974,9 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         //
         // wrap optionsPane
         wrapper.getScrollPane().getViewport().add(addNewIssue);
-        dialog.setBounds(100, 100, 1070, 670);
+        //dialog.setBounds(100, 100, 1070, 670);
+        Dimension dim = ((JComponent) addNewIssue).getPreferredSize();
+        dialog.setBounds(100, 100, (int) Math.round(dim.getWidth() * 1.33), (int) Math.round(dim.getHeight() * 1.50));
         dialog.setContentPane(wrapper);
         //
         modalResult = false;
@@ -988,7 +1010,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 dialog.dispose();
             }
         });
-        dialog.setLocationRelativeTo(flowComponent);
+        dialog.setLocationRelativeTo(null);
         dialog.setVisible(true);
         //
         return modalResult;
@@ -1310,6 +1332,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
     // flow filter default
     private void flowFilterSetDefaults() {
         flowFilterInscope.setSelected(false);
+        flowFilterOutofscope.setSelected(false);
         flowFilterParametrized.setSelected(false);
         flowFilterSearchField.setText("");
         flowFilterSearchCaseSensitive.setSelected(false);
@@ -1387,6 +1410,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         boolean filterAll = true;
         if (flowFilterInscope.isSelected()) {
             filterDescription.append("In-scope, ");
+            filterAll = false;
+        }
+        if (flowFilterOutofscope.isSelected()) {
+            filterDescription.append("Out-of-scope, ");
             filterAll = false;
         }
         if (flowFilterParametrized.isSelected()) {
@@ -1592,6 +1619,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 }
                 // in-scope
                 if (result && flowFilterInscope.isSelected() && !callbacks.isInScope(flowEntry.url)) {
+                    result = false;
+                }
+                // out-of-scope
+                if (result && flowFilterOutofscope.isSelected() && callbacks.isInScope(flowEntry.url)) {
                     result = false;
                 }
                 // parametrized
@@ -1860,7 +1891,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                     case 3:
                         return flowEntry.method;
                     case 4:
-                        return flowEntry.getQueryPath(); //url.getPath();
+                        return flowEntry.getPath(); //flowEntry.getQueryPath();
                     case 5:
                         return new String(new char[flowEntry.getReflections().size()]).replace("\0", "|");
                     case 6:
@@ -1936,6 +1967,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         private String mime;
         private final Date date;
         private String comment;
+        private final String path;
         private final String queryPath;
         private final ArrayList<IParameter> reflections;
         private final IHttpService service;
@@ -1990,6 +2022,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
             url = requestInfo.getUrl();
             service = messageInfo.getHttpService();
             reflections = new ArrayList<>();
+            path = url.getPath();
             {
                 StringBuilder pathBuilder = new StringBuilder(url.getPath());
                 String query = url.getQuery();
@@ -2036,6 +2069,10 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
          */
         public String getQueryPath() {
             return queryPath;
+        }
+
+        public String getPath() {
+            return path;
         }
 
         public ArrayList<IParameter> getReflections() {
