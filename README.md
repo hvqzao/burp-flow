@@ -1,6 +1,6 @@
 # Flow
 
-This simple extension provides Proxy-like view with along with search filter capabilities for all Burp sources. Some users might find Parameters count table column handy.
+This simple extension provides Proxy-like view along with search filter capabilities for all Burp sources. Some users might find Parameters count table column handy.
 
 Request without responses received are also being shown and they are later updated as soon as response is received. This might be helpful to troubleshoot e.g. scanning issues.
 
