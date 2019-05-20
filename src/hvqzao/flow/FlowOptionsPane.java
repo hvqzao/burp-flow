@@ -22,6 +22,8 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         callbacks.customizeUiComponent(autoPopulate);
         callbacks.customizeUiComponent(autoDelete);
         callbacks.customizeUiComponent(autoDeleteKeep);
+        callbacks.customizeUiComponent(showReflections);
+        callbacks.customizeUiComponent(showReflectionsCount);
     }
     
     public JButton getModeHelp() {
@@ -52,6 +54,14 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         return autoDeleteKeep;
     }
 
+    public JCheckBox getShowReflections() {
+        return showReflections;
+    }
+
+    public JTextField getShowReflectionsCount() {
+        return showReflectionsCount;
+    }
+    
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -74,6 +84,8 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         autoDelete = new javax.swing.JCheckBox();
         autoDeleteKeep = new javax.swing.JTextField();
         autoPopulate = new javax.swing.JCheckBox();
+        showReflections = new javax.swing.JCheckBox();
+        showReflectionsCount = new javax.swing.JTextField();
 
         setBorder(javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5));
 
@@ -110,6 +122,10 @@ public class FlowOptionsPane extends javax.swing.JPanel {
         autoPopulate.setSelected(true);
         autoPopulate.setText("Populate with requests from Proxy history");
 
+        showReflections.setText("Show parameter reflections. Count:");
+
+        showReflectionsCount.setText("10");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -130,19 +146,23 @@ public class FlowOptionsPane extends javax.swing.JPanel {
                             .addGroup(layout.createSequentialGroup()
                                 .addGap(21, 21, 21)
                                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 308, Short.MAX_VALUE)))))
+                                    .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
+                                    .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)))))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(miscHelp, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(autoDelete)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                 .addComponent(autoDeleteKeep, javax.swing.GroupLayout.PREFERRED_SIZE, 40, javax.swing.GroupLayout.PREFERRED_SIZE))
                             .addComponent(autoPopulate)
-                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(0, 0, Short.MAX_VALUE))))
+                            .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(showReflections)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(showReflectionsCount, javax.swing.GroupLayout.PREFERRED_SIZE, 32, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGap(0, 81, Short.MAX_VALUE))))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -167,12 +187,16 @@ public class FlowOptionsPane extends javax.swing.JPanel {
                     .addComponent(miscHelp, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(showReflections)
+                    .addComponent(showReflectionsCount, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(autoPopulate)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(autoDelete)
                     .addComponent(autoDeleteKeep, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(12, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
     }// </editor-fold>//GEN-END:initComponents
 
@@ -191,5 +215,7 @@ public class FlowOptionsPane extends javax.swing.JPanel {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JButton miscHelp;
     private javax.swing.JButton modeHelp;
+    private javax.swing.JCheckBox showReflections;
+    private javax.swing.JTextField showReflectionsCount;
     // End of variables declaration//GEN-END:variables
 }

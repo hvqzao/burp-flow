@@ -44,8 +44,8 @@
                           <Group type="102" attributes="0">
                               <EmptySpace min="21" pref="21" max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Component id="jLabel2" pref="0" max="32767" attributes="0"/>
-                                  <Component id="jLabel3" pref="308" max="32767" attributes="0"/>
+                                  <Component id="jLabel2" pref="341" max="32767" attributes="0"/>
+                                  <Component id="jLabel3" pref="341" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                       </Group>
@@ -56,13 +56,18 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <Component id="autoDelete" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace max="-2" attributes="0"/>
+                              <EmptySpace type="unrelated" max="-2" attributes="0"/>
                               <Component id="autoDeleteKeep" min="-2" pref="40" max="-2" attributes="0"/>
                           </Group>
                           <Component id="autoPopulate" alignment="0" min="-2" max="-2" attributes="0"/>
                           <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
+                          <Group type="102" alignment="0" attributes="0">
+                              <Component id="showReflections" min="-2" max="-2" attributes="0"/>
+                              <EmptySpace max="-2" attributes="0"/>
+                              <Component id="showReflectionsCount" min="-2" pref="32" max="-2" attributes="0"/>
+                          </Group>
                       </Group>
-                      <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="81" max="32767" attributes="0"/>
                   </Group>
               </Group>
           </Group>
@@ -94,13 +99,18 @@
                   <Component id="jLabel4" min="-2" max="-2" attributes="0"/>
               </Group>
               <EmptySpace type="unrelated" max="-2" attributes="0"/>
+              <Group type="103" groupAlignment="3" attributes="0">
+                  <Component id="showReflections" alignment="3" min="-2" max="-2" attributes="0"/>
+                  <Component id="showReflectionsCount" alignment="3" min="-2" max="-2" attributes="0"/>
+              </Group>
+              <EmptySpace max="-2" attributes="0"/>
               <Component id="autoPopulate" min="-2" max="-2" attributes="0"/>
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="3" attributes="0">
                   <Component id="autoDelete" alignment="3" min="-2" max="-2" attributes="0"/>
                   <Component id="autoDeleteKeep" alignment="3" min="-2" max="-2" attributes="0"/>
               </Group>
-              <EmptySpace pref="12" max="32767" attributes="0"/>
+              <EmptySpace max="32767" attributes="0"/>
           </Group>
       </Group>
     </DimensionLayout>
@@ -192,6 +202,16 @@
       <Properties>
         <Property name="selected" type="boolean" value="true"/>
         <Property name="text" type="java.lang.String" value="Populate with requests from Proxy history"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JCheckBox" name="showReflections">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="Show parameter reflections. Count:"/>
+      </Properties>
+    </Component>
+    <Component class="javax.swing.JTextField" name="showReflectionsCount">
+      <Properties>
+        <Property name="text" type="java.lang.String" value="10"/>
       </Properties>
     </Component>
   </SubComponents>

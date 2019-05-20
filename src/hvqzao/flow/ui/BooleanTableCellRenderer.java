@@ -1,6 +1,5 @@
 package hvqzao.flow.ui;
 
-import static hvqzao.flow.ui.Helper.cellBackground;
 import java.awt.Component;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
@@ -30,7 +29,7 @@ public class BooleanTableCellRenderer extends JCheckBox implements TableCellRend
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         //int modelRow = table.convertRowIndexToModel(row);
-        setBackground(cellBackground(table.getRowCount(), row, isSelected));
+        setBackground(ThemeHelper.cellBackground(table.getRowCount(), row, isSelected));
         if (value instanceof Boolean) {
             setSelected((Boolean) value);
         }

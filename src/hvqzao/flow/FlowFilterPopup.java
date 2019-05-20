@@ -297,7 +297,7 @@ public final class FlowFilterPopup extends javax.swing.JPanel {
         FlowFilterCaptureSourceProxyOnly = new javax.swing.JCheckBox();
         FlowFilterBottom = new javax.swing.JPanel();
 
-        setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.white, 2), javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5))));
+        setBorder(javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(javax.swing.UIManager.getDefaults().getColor("Table.background"), 2), javax.swing.BorderFactory.createCompoundBorder(javax.swing.BorderFactory.createLineBorder(java.awt.Color.darkGray), javax.swing.BorderFactory.createEmptyBorder(5, 5, 5, 5))));
 
         flowFilterHelp.setMargin(new java.awt.Insets(0, 0, 0, 0));
         flowFilterHelp.setMaximumSize(new java.awt.Dimension(24, 24));

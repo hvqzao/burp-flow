@@ -7,7 +7,7 @@
         <CompoundBorder>
           <Border PropertyName="outside" info="org.netbeans.modules.form.compat2.border.LineBorderInfo">
             <LineBorder thickness="2">
-              <Color PropertyName="color" blue="ff" green="ff" id="white" palette="1" red="ff" type="palette"/>
+              <Color PropertyName="color" blue="ff" green="ff" id="Table.background" palette="3" red="ff" type="palette"/>
             </LineBorder>
           </Border>
           <Border PropertyName="inside" info="org.netbeans.modules.form.compat2.border.CompoundBorderInfo">
