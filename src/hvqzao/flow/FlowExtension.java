@@ -673,6 +673,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 flowTableCellRenderer = new FlowTableCellRenderer();
                 flowTable.setDefaultRenderer(Object.class, flowTableCellRenderer);
 		flowTable.setDefaultRenderer(Date.class, flowTableCellRenderer); // Newer JTable requires Date be explicitly added here or it won't be processed
+		flowTable.setDefaultRenderer(Integer.class, flowTableCellRenderer); // Added to fix row highlighting bug with ints
                 // flow bottom prolog: request & response
                 JSplitPane flowViewPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
                 flowViewPane.setResizeWeight(.5d);
