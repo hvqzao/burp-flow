@@ -672,6 +672,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
                 // flowTable renderer
                 flowTableCellRenderer = new FlowTableCellRenderer();
                 flowTable.setDefaultRenderer(Object.class, flowTableCellRenderer);
+		flowTable.setDefaultRenderer(Date.class, flowTableCellRenderer); // Newer JTable requires Date be explicitly added here or it won't be processed
                 // flow bottom prolog: request & response
                 JSplitPane flowViewPane = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT);
                 flowViewPane.setResizeWeight(.5d);
@@ -2097,7 +2098,7 @@ public class FlowExtension implements IBurpExtender, ITab, IHttpListener, IScope
         /**
          * Returns URL's path along with query string (if present)
          *
-         * @return
+         * @return queryPath 
          */
         public String getQueryPath() {
             return queryPath;

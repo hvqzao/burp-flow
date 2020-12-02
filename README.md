@@ -20,6 +20,10 @@ This extension _DOES NOT_ require Burp Suite Professional
 
 ## Changelog
 
+2020-12-02 - 1.25
+- fixed support for dark mode
+- fixed bug with "Time" column (Issue #11)
+
 2017-03-10 - 1.10
 - added "Reflect" column (analysis result is available in tooltip)
 

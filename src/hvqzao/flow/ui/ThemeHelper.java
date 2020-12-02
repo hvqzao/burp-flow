@@ -11,7 +11,7 @@ public class ThemeHelper {
     private static final Color COLOR_NIMBUS_LIGHTGRAY = new Color(250, 250, 250);
 
     private static final String THEME_NAME = UIManager.getLookAndFeel().getName().toLowerCase();
-    private static final boolean DARK_THEME = "darcula".equals(THEME_NAME);
+    private static final boolean DARK_THEME = UIManager.getLookAndFeel().getID().contains("Dar"); // Updated to catch new "Dark" theme name in v2020.11+
 
     private static final Color COLOR_TABLE_BACKGROUND = UIManager.getColor("Table.background");
     private static final Color COLOR_TABLE_SELECTIONBACKGROUND = UIManager.getColor("Tree.selectionBackground");
